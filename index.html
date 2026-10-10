@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fff9f5">
+  <meta name="description" content="Vườn Hoa Rực Rỡ — một photobook 20/10 dành riêng cho 30 cô gái tuyệt vời.">
+  <title>20/10 — Vườn Hoa Rực Rỡ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            roseink: '#923c55',
+            dustyrose: '#d98f9a',
+            champagne: '#c89968',
+            blush: '#fff1ef',
+            ivory: '#fff9f5'
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['Be Vietnam Pro', 'sans-serif'],
+            label: ['Montserrat', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --ink: #3f2935;
+      --rose-ink: #923c55;
+      --rose: #d98f9a;
+      --rose-deep: #b45e73;
+      --champagne: #c89968;
+      --champagne-light: #efd7b7;
+      --ivory: #fff9f5;
+      --cream: #fff3ed;
+      --line: rgba(174, 110, 124, 0.2);
+      --shadow: 0 22px 80px rgba(137, 63, 83, 0.14);
+      --shadow-small: 0 14px 34px rgba(137, 63, 83, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: var(--ivory);
+      font-family: 'Be Vietnam Pro', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.no-scroll { overflow: hidden; }
+    body::selection { background: var(--rose); color: white; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font-family: inherit; }
+
+    .font-display { font-family: 'Playfair Display', serif; }
+    .font-label { font-family: 'Montserrat', sans-serif; }
+    .tracking-luxe { letter-spacing: .18em; }
+    .text-balance { text-wrap: balance; }
+
+    .ambient-wash {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 8% 6%, rgba(248, 198, 208, .5), transparent 30%),
+        radial-gradient(circle at 92% 16%, rgba(240, 216, 184, .38), transparent 27%),
+        radial-gradient(circle at 50% 100%, rgba(247, 217, 215, .28), transparent 34%),
+        var(--ivory);
+    }
+    .ambient-wash::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .42;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    #particle-canvas, #firework-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #particle-canvas { z-index: 2; opacity: .9; transition: opacity .35s ease; }
+    #particle-canvas.is-off { opacity: 0; }
+    #firework-canvas { z-index: 80; }
+
+    .intro-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255, 238, 232, .98), rgba(255, 249, 245, .86) 42%, rgba(249, 222, 219, .92)),
+        var(--ivory);
+      transition: opacity .85s cubic-bezier(.22, .61, .36, 1), transform .85s cubic-bezier(.22, .61, .36, 1), visibility .85s;
+    }
+    .intro-screen::before, .intro-screen::after {
+      content: '';
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(2px);
+      opacity: .56;
+      pointer-events: none;
+    }
+    .intro-screen::before {
+      width: 42vw; height: 42vw; left: -18vw; top: -13vw;
+      background: radial-gradient(circle, rgba(236, 164, 180, .42), transparent 68%);
+    }
+    .intro-screen::after {
+      width: 46vw; height: 46vw; right: -18vw; bottom: -18vw;
+      background: radial-gradient(circle, rgba(215, 181, 129, .28), transparent 68%);
+    }
+    .intro-screen.is-hidden { opacity: 0; visibility: hidden; transform: scale(1.09); pointer-events: none; }
+    .intro-inner { position: relative; z-index: 1; width: min(100%, 720px); text-align: center; }
+    .intro-kicker { color: var(--champagne); font-size: .68rem; font-weight: 800; text-transform: uppercase; }
+    .intro-title { margin: 21px auto 0; max-width: 680px; color: var(--rose-ink); font-size: clamp(2.15rem, 7vw, 5.55rem); line-height: .98; }
+    .intro-subtitle { min-height: 58px; margin: 22px auto 0; max-width: 570px; color: #755766; font-size: clamp(.95rem, 2vw, 1.12rem); line-height: 1.75; }
+    .type-cursor { display: inline-block; width: 1px; height: 1.1em; margin-left: 3px; vertical-align: -.18em; background: var(--rose-deep); animation: blink 1s steps(2, jump-none) infinite; }
+    .intro-cta { margin-top: 27px; }
+    .intro-note { margin-top: 19px; color: rgba(117, 87, 102, .72); font-family: 'Montserrat', sans-serif; font-size: .64rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+
+    .bouquet-stage { width: min(82vw, 310px); height: 265px; margin: 3px auto 0; perspective: 850px; transform-style: preserve-3d; }
+    .bouquet-tilt { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .18s ease-out; animation: float 4.8s ease-in-out infinite; }
+    .bouquet-glow { position: absolute; left: 50%; top: 45%; width: 190px; height: 190px; transform: translate(-50%, -50%); border-radius: 50%; background: rgba(229, 147, 158, .22); filter: blur(30px); }
+    .bouquet-ribbon { position: absolute; left: 50%; bottom: 14px; z-index: 5; width: 104px; height: 92px; transform: translateX(-50%) rotate(-2deg); border-radius: 52% 48% 22% 22%; background: linear-gradient(135deg, #f4d8d0, #d98296 55%, #a8526d); box-shadow: inset 13px 10px 22px rgba(255,255,255,.32), 0 16px 24px rgba(143, 60, 81, .22); }
+    .bouquet-ribbon::before, .bouquet-ribbon::after { content: ''; position: absolute; top: 72px; width: 58px; height: 90px; background: linear-gradient(120deg, #c96c82, #f0b2b6); clip-path: polygon(50% 0, 100% 100%, 46% 82%, 0 100%); }
+    .bouquet-ribbon::before { right: 47px; transform: rotate(16deg); }
+    .bouquet-ribbon::after { left: 45px; transform: scaleX(-1) rotate(14deg); }
+    .flower { position: absolute; z-index: 4; width: 67px; height: 67px; border-radius: 50%; transform-style: preserve-3d; }
+    .flower::before, .flower::after { content: ''; position: absolute; inset: 1px; border-radius: 50%; background: radial-gradient(circle at 48% 46%, #f8d0ce 0 12%, #df8a91 13% 31%, #bb5d72 32% 48%, transparent 49%), radial-gradient(circle at 30% 35%, #f7bfc2 0 19%, transparent 20%), radial-gradient(circle at 72% 66%, #e9a0a2 0 24%, transparent 25%); filter: drop-shadow(0 10px 9px rgba(145, 59, 80, .22)); }
+    .flower::after { transform: rotate(36deg) scale(.78); opacity: .8; }
+    .flower.f1 { left: 18%; top: 37%; transform: scale(.82) rotate(-12deg) translateZ(22px); }
+    .flower.f2 { left: 39%; top: 18%; transform: scale(1.08) rotate(9deg) translateZ(46px); }
+    .flower.f3 { right: 18%; top: 37%; transform: scale(.87) rotate(17deg) translateZ(30px); }
+    .flower.f4 { left: 31%; top: 48%; transform: scale(.72) rotate(-20deg) translateZ(35px); }
+    .flower.f5 { right: 30%; top: 49%; transform: scale(.74) rotate(21deg) translateZ(29px); }
+    .leaf { position: absolute; z-index: 3; width: 64px; height: 28px; border-radius: 100% 0 100% 0; background: linear-gradient(135deg, #b6c69e, #678b67); box-shadow: inset 8px 5px 12px rgba(255,255,255,.25); }
+    .leaf.l1 { left: 23%; top: 53%; transform: rotate(32deg) translateZ(12px); }
+    .leaf.l2 { right: 24%; top: 54%; transform: scaleX(-1) rotate(29deg) translateZ(12px); }
+    .leaf.l3 { left: 40%; top: 57%; transform: rotate(79deg) translateZ(16px); }
+    .stem { position: absolute; left: 50%; bottom: 41px; z-index: 2; width: 4px; height: 102px; transform: rotate(4deg); background: #71916a; border-radius: 4px; }
+    .stem.s2 { transform: rotate(-17deg); }
+    .stem.s3 { transform: rotate(18deg); }
+
+    .top-controls { position: fixed; z-index: 75; right: 17px; top: max(16px, env(safe-area-inset-top)); display: flex; gap: 8px; }
+    .control-button { display: inline-grid; place-items: center; width: 39px; height: 39px; color: var(--rose-ink); background: rgba(255,255,255,.68); border: 1px solid rgba(190, 125, 134, .24); border-radius: 50%; box-shadow: 0 8px 20px rgba(137, 63, 83, .1); backdrop-filter: blur(15px); transition: transform .2s ease, background .2s ease, color .2s ease; }
+    .control-button:hover { transform: translateY(-2px); background: white; color: var(--champagne); }
+    .control-button.is-off { color: rgba(117, 87, 102, .5); }
+
+    .btn-primary, .btn-secondary, .btn-quiet { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 47px; padding: 0 22px; border-radius: 999px; font-family: 'Montserrat', sans-serif; font-size: .69rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; transition: transform .25s ease, box-shadow .25s ease, background .25s ease; cursor: pointer; }
+    .btn-primary { color: white; background: linear-gradient(135deg, #d9909b, #ad5570); border: 0; box-shadow: 0 13px 25px rgba(180, 94, 115, .27); animation: ctaPulse 2.8s ease-in-out infinite; }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 18px 33px rgba(180, 94, 115, .34); }
+    .btn-secondary { color: var(--rose-ink); background: rgba(255,255,255,.72); border: 1px solid rgba(180, 94, 115, .25); box-shadow: var(--shadow-small); }
+    .btn-secondary:hover, .btn-quiet:hover { transform: translateY(-2px); background: white; box-shadow: var(--shadow); }
+    .btn-quiet { min-height: 41px; padding: 0 16px; color: var(--rose-ink); background: rgba(255,255,255,.6); border: 1px solid var(--line); font-size: .61rem; }
+    .btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-quiet:focus-visible, .control-button:focus-visible { outline: 3px solid rgba(217,143,154,.45); outline-offset: 3px; }
+
+    .main-content { position: relative; z-index: 3; opacity: 0; transform: translateY(20px); transition: opacity .7s ease .35s, transform .7s ease .35s; }
+    body.revealed .main-content { opacity: 1; transform: translateY(0); }
+    .page-shell { width: min(1160px, calc(100% - 38px)); margin: 0 auto; }
+    .hero { position: relative; min-height: 94vh; display: flex; align-items: center; padding: 118px 0 86px; }
+    .hero::before { content: '20'; position: absolute; right: -8vw; top: 10vh; color: rgba(213, 146, 154, .08); font-family: 'Playfair Display', serif; font-size: clamp(15rem, 33vw, 33rem); line-height: 1; pointer-events: none; }
+    .hero-grid { position: relative; z-index: 1; display: grid; gap: 46px; align-items: center; grid-template-columns: 1fr; }
+    .hero-copy { max-width: 650px; }
+    .eyebrow { display: flex; align-items: center; gap: 12px; color: var(--champagne); font-family: 'Montserrat', sans-serif; font-size: .67rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+    .eyebrow::before { content: ''; width: 34px; height: 1px; background: currentColor; }
+    .hero h1 { margin: 22px 0 0; color: var(--rose-ink); font-size: clamp(3.25rem, 9.2vw, 7.5rem); line-height: .91; letter-spacing: -.055em; }
+    .hero h1 em { color: var(--rose); font-weight: 500; }
+    .hero-lead { max-width: 540px; margin: 28px 0 0; color: #705564; font-size: clamp(.98rem, 1.8vw, 1.12rem); line-height: 1.85; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 31px; }
+    .hero-stats { display: flex; gap: 25px; margin-top: 40px; }
+    .hero-stat { position: relative; padding-left: 15px; }
+    .hero-stat::before { content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; background: var(--champagne-light); }
+    .hero-stat strong { display: block; color: var(--rose-ink); font-family: 'Playfair Display', serif; font-size: 2rem; line-height: 1; }
+    .hero-stat span { display: block; margin-top: 7px; color: #8d6b79; font-family: 'Montserrat', sans-serif; font-size: .59rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .hero-art { position: relative; min-height: 420px; display: grid; place-items: center; }
+    .hero-orbit { position: absolute; width: min(82vw, 430px); aspect-ratio: 1; border: 1px solid rgba(201, 153, 104, .27); border-radius: 50%; transform: rotate(19deg); }
+    .hero-orbit::before, .hero-orbit::after { content: ''; position: absolute; width: 10px; height: 10px; border: 2px solid var(--champagne); border-radius: 50%; background: var(--ivory); }
+    .hero-orbit::before { left: 10%; top: 13%; }
+    .hero-orbit::after { right: 9%; bottom: 19%; }
+    .hero-frame { position: relative; width: min(82vw, 500px); aspect-ratio: 1.5; padding: 10px; transform: rotate(3deg); background: linear-gradient(140deg, rgba(255,255,255,.9), rgba(238, 205, 192, .86)); box-shadow: 24px 30px 70px rgba(139, 70, 83, .24); }
+    .hero-frame::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(172, 107, 113, .4); pointer-events: none; }
+    .hero-frame img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.88) contrast(.95); }
+    .hero-sticker { position: absolute; right: -19px; top: 41px; display: grid; place-items: center; width: 83px; height: 83px; padding: 10px; color: var(--rose-ink); background: rgba(255, 245, 233, .92); border: 1px solid rgba(201, 153, 104, .48); border-radius: 50%; font-family: 'Playfair Display', serif; font-size: .84rem; line-height: 1.05; text-align: center; transform: rotate(15deg); box-shadow: var(--shadow-small); }
+    .hero-caption { position: absolute; left: 5%; bottom: 24px; display: flex; align-items: center; gap: 10px; color: #8d6b79; font-family: 'Montserrat', sans-serif; font-size: .58rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .hero-caption::before { content: ''; width: 27px; height: 1px; background: var(--champagne); }
+
+    .section { position: relative; padding: 96px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 37px; }
+    .section-head-copy { max-width: 620px; }
+    .section-title { margin: 12px 0 0; color: var(--rose-ink); font-size: clamp(2.25rem, 5vw, 4.65rem); line-height: .99; letter-spacing: -.045em; }
+    .section-intro { max-width: 530px; margin: 17px 0 0; color: #806370; font-size: .97rem; line-height: 1.75; }
+    .section-number { color: rgba(201, 153, 104, .62); font-family: 'Montserrat', sans-serif; font-size: .72rem; font-weight: 800; letter-spacing: .18em; }
+    .archive-tools { display: flex; align-items: center; gap: 11px; color: #8d6b79; font-family: 'Montserrat', sans-serif; font-size: .63rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+    .archive-tools strong { color: var(--rose); font-family: 'Playfair Display', serif; font-size: 1.7rem; letter-spacing: 0; }
+
+    .members-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .member-card { position: relative; min-height: 268px; overflow: hidden; border: 1px solid rgba(255,255,255,.75); border-radius: 20px; background: rgba(255,255,255,.42); box-shadow: 0 12px 27px rgba(143, 79, 96, .07); backdrop-filter: blur(14px); cursor: pointer; transform-style: preserve-3d; transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease; }
+    .member-card:hover { border-color: rgba(217,143,154,.65); box-shadow: 0 20px 40px rgba(143, 79, 96, .17), 0 0 0 4px rgba(255,255,255,.5); }
+    .member-card::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 38%, rgba(61, 29, 43, .74) 100%); pointer-events: none; }
+    .member-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .75s cubic-bezier(.22,.61,.36,1), filter .45s ease; filter: saturate(.84); }
+    .member-card:hover img { transform: scale(1.08); filter: saturate(1.02); }
+    .member-index { position: absolute; z-index: 3; top: 13px; left: 13px; display: grid; place-items: center; width: 34px; height: 34px; color: white; background: rgba(146, 60, 85, .58); border: 1px solid rgba(255,255,255,.48); border-radius: 50%; font-family: 'Montserrat', sans-serif; font-size: .63rem; font-weight: 800; backdrop-filter: blur(9px); }
+    .member-liked { position: absolute; z-index: 3; top: 13px; right: 13px; color: white; opacity: .88; }
+    .member-info { position: absolute; z-index: 3; left: 17px; right: 15px; bottom: 15px; color: white; }
+    .member-name { margin: 0; font-family: 'Playfair Display', serif; font-size: 1.6rem; line-height: 1; }
+    .member-birthday { display: block; margin-bottom: 5px; color: #ffe4c3; font-family: 'Montserrat', sans-serif; font-size: .57rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .member-cta { display: flex; align-items: center; gap: 6px; margin-top: 9px; color: rgba(255,255,255,.78); font-family: 'Montserrat', sans-serif; font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+
+    .letter-section { padding-top: 65px; }
+    .letter-layout { display: grid; gap: 36px; align-items: center; }
+    .letter-copy { max-width: 480px; }
+    .letter-copy p { color: #806370; font-size: .98rem; line-height: 1.85; }
+    .letter-wrap { display: grid; place-items: center; min-height: 490px; perspective: 1400px; }
+    .letter-card { position: relative; width: min(100%, 520px); min-height: 450px; transform-style: preserve-3d; }
+    .letter-paper, .letter-cover { position: absolute; inset: 0; border-radius: 13px; }
+    .letter-paper { padding: 38px 30px 28px; background: #fffdf7; border: 1px solid rgba(201,153,104,.45); box-shadow: 0 24px 50px rgba(146, 73, 88, .12); }
+    .letter-paper h3 { margin: 0; color: var(--rose-ink); font-family: 'Playfair Display', serif; font-size: clamp(1.55rem, 4vw, 2.25rem); line-height: 1.08; }
+    .letter-paper p { margin: 16px 0 0; color: #806370; font-size: .82rem; line-height: 1.8; }
+    .letter-sign { margin-top: 18px; color: var(--champagne); font-family: 'Playfair Display', serif; font-size: 1.06rem; font-style: italic; }
+    .letter-cover { z-index: 2; display: grid; place-items: center; padding: 25px; color: white; text-align: center; transform-origin: left center; background: linear-gradient(145deg, #e5a7a9, #b86077 70%, #93435e); box-shadow: 0 24px 50px rgba(146, 73, 88, .25); transition: transform 1.15s cubic-bezier(.2,.72,.22,1), box-shadow .8s ease; backface-visibility: hidden; }
+    .letter-cover::before { content: ''; position: absolute; inset: 14px; border: 1px solid rgba(255,255,255,.54); border-radius: 8px; }
+    .letter-cover::after { content: '✦'; position: absolute; left: 50%; top: 50%; display: grid; place-items: center; width: 52px; height: 52px; color: #fff1d9; border: 1px solid rgba(255,241,217,.68); border-radius: 50%; transform: translate(-50%, -50%); font-size: 1.3rem; }
+    .letter-cover-content { position: relative; z-index: 1; }
+    .letter-cover small { display: block; color: #ffe9d1; font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .letter-cover h3 { margin-top: 22px; font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.25rem); line-height: .98; }
+    .letter-card.is-open .letter-cover { transform: rotateY(-148deg); box-shadow: 0 7px 20px rgba(146, 73, 88, .1); }
+    .letter-open-label { position: absolute; z-index: 3; bottom: 20px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.84); font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .letter-open-label span:last-child { display: none; }
+    .letter-card.is-open .letter-open-label { color: rgba(146, 60, 85, .62); }
+    .letter-card.is-open .letter-open-label span:first-child { display: none; }
+    .letter-card.is-open .letter-open-label span:last-child { display: inline; }
+
+    .fortune-section { overflow: hidden; }
+    .fortune-box { position: relative; padding: 42px 23px 28px; overflow: hidden; color: white; border-radius: 26px; background: linear-gradient(120deg, #923c55, #c87984 54%, #d7a16e); box-shadow: 0 24px 60px rgba(146, 60, 85, .2); }
+    .fortune-box::before { content: '✦'; position: absolute; right: 9%; top: -15px; color: rgba(255,235,199,.3); font-family: 'Playfair Display', serif; font-size: 15rem; line-height: 1; transform: rotate(14deg); }
+    .fortune-box::after { content: ''; position: absolute; left: -12%; bottom: -76px; width: 270px; height: 150px; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; transform: rotate(-14deg); }
+    .fortune-content { position: relative; z-index: 1; display: grid; gap: 30px; align-items: end; }
+    .fortune-kicker { color: #ffe5bd; font-family: 'Montserrat', sans-serif; font-size: .65rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .fortune-title { margin: 14px 0 0; font-family: 'Playfair Display', serif; font-size: clamp(2.25rem, 6vw, 4.1rem); line-height: .98; }
+    .fortune-text { max-width: 530px; margin: 17px 0 0; color: rgba(255,255,255,.82); font-size: .88rem; line-height: 1.75; }
+    .fortune-action { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; }
+    .fortune-action .btn-secondary { color: var(--rose-ink); background: #fff9f0; border-color: transparent; }
+    .fortune-result { position: relative; z-index: 1; min-height: 0; max-height: 0; margin-top: 0; overflow: hidden; opacity: 0; transform: translateY(10px); transition: max-height .6s ease, opacity .6s ease, transform .6s ease, margin .6s ease; }
+    .fortune-result.is-visible { max-height: 250px; margin-top: 32px; opacity: 1; transform: translateY(0); }
+    .fortune-answer { display: grid; min-height: 190px; place-items: center; padding: 34px 24px; color: var(--rose-ink); text-align: center; background: rgba(255,249,240,.95); border: 1px solid rgba(255,255,255,.6); border-radius: 15px; box-shadow: 0 12px 32px rgba(79, 30, 47, .12); }
+    .fortune-gift-title { margin: 0; color: var(--rose-ink); font-family: 'Playfair Display', serif; font-size: clamp(2.45rem, 7vw, 5rem); font-weight: 700; line-height: .98; letter-spacing: -.045em; text-wrap: balance; }
+
+    .footer { padding: 40px 0 54px; color: #96727d; font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 700; letter-spacing: .1em; text-align: center; text-transform: uppercase; }
+    .footer-mark { display: block; margin-bottom: 10px; color: var(--rose); font-family: 'Playfair Display', serif; font-size: 1.2rem; font-style: italic; letter-spacing: 0; text-transform: none; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 17px; background: rgba(64, 26, 42, .58); opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s ease; backdrop-filter: blur(13px); }
+    .modal-backdrop.is-open { opacity: 1; visibility: visible; }
+    .modal-window { position: relative; display: grid; width: min(100%, 1020px); max-height: calc(100vh - 34px); overflow: auto; border: 1px solid rgba(255,255,255,.7); border-radius: 24px; background: #fff9f5; box-shadow: 0 26px 100px rgba(44, 11, 28, .36); transform: translateY(25px) scale(.96); transition: transform .45s cubic-bezier(.22,.61,.36,1); }
+    .modal-backdrop.is-open .modal-window { transform: translateY(0) scale(1); }
+    .modal-close { position: absolute; z-index: 5; right: 13px; top: 13px; display: grid; place-items: center; width: 39px; height: 39px; color: var(--rose-ink); background: rgba(255,255,255,.78); border: 1px solid rgba(180,94,115,.2); border-radius: 50%; cursor: pointer; }
+    .modal-visual { position: relative; min-height: 340px; background: #f6e4df; }
+    .modal-visual img { width: 100%; height: 100%; min-height: 340px; object-fit: cover; }
+    .modal-photo-label { position: absolute; left: 18px; bottom: 17px; color: white; font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; text-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .modal-copy { display: flex; flex-direction: column; padding: 35px 25px 24px; }
+    .modal-count { color: var(--champagne); font-family: 'Montserrat', sans-serif; font-size: .63rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .modal-copy h2 { margin: 13px 0 0; color: var(--rose-ink); font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.7rem); line-height: .96; }
+    .modal-birthday { margin: 13px 0 0; color: var(--champagne); font-family: 'Montserrat', sans-serif; font-size: .62rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .modal-quote { position: relative; margin: 30px 0 0; padding: 20px 0 0; color: #806370; font-family: 'Playfair Display', serif; font-size: 1.1rem; line-height: 1.62; }
+    .modal-quote::before { content: '“'; position: absolute; left: -4px; top: -21px; color: rgba(201,153,104,.45); font-size: 4rem; line-height: 1; }
+    .modal-bottom { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: auto; padding-top: 28px; }
+    .modal-nav { display: flex; gap: 8px; }
+    .nav-circle { display: grid; place-items: center; width: 40px; height: 40px; color: var(--rose-ink); background: white; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; transition: transform .2s ease, background .2s ease; }
+    .nav-circle:hover { transform: translateY(-2px); background: var(--cream); }
+    .like-button { display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 14px; color: var(--rose-ink); background: #fff; border: 1px solid var(--line); border-radius: 999px; font-family: 'Montserrat', sans-serif; font-size: .59rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; cursor: pointer; }
+    .like-button.is-liked { color: white; background: var(--rose); border-color: var(--rose); }
+    .like-button svg { width: 15px; height: 15px; }
+
+    #heart-layer { position: fixed; inset: 0; z-index: 120; pointer-events: none; overflow: hidden; }
+    .floating-heart { position: absolute; color: #e28598; font-size: 18px; animation: heartRise 1.8s ease-out forwards; filter: drop-shadow(0 5px 10px rgba(180,94,115,.22)); }
+
+    /* MOTION SYSTEM — chuyển cảnh cinematic, reveal theo scroll và hover có chiều sâu */
+    .scroll-progress { position: fixed; z-index: 95; left: 0; top: 0; width: 100%; height: 3px; pointer-events: none; transform-origin: left center; transform: scaleX(0); background: linear-gradient(90deg, #d98f9a, #c89968, #b45e73); box-shadow: 0 0 14px rgba(217,143,154,.7); }
+    .cursor-glow { position: fixed; z-index: 1; width: 280px; height: 280px; pointer-events: none; border-radius: 50%; opacity: 0; background: radial-gradient(circle, rgba(255,224,208,.26), rgba(255,224,208,0) 68%); transform: translate(-50%, -50%); transition: opacity .35s ease; mix-blend-mode: multiply; }
+    body.is-interacting .cursor-glow { opacity: 1; }
+    [data-reveal] { opacity: 0; transform: translateY(42px) scale(.98); filter: blur(6px); transition: opacity .9s cubic-bezier(.22,.61,.36,1), transform 1s cubic-bezier(.22,.61,.36,1), filter 1s ease; }
+    [data-reveal="left"] { transform: translateX(-48px) rotate(-1deg); }
+    [data-reveal="right"] { transform: translateX(48px) rotate(1deg); }
+    [data-reveal="scale"] { transform: translateY(24px) scale(.9); }
+    [data-reveal].is-visible { opacity: 1; transform: none; filter: blur(0); }
+    .section { isolation: isolate; }
+    .section::after { content: ''; position: absolute; z-index: -1; left: 50%; bottom: -1px; width: min(780px, 78vw); height: 1px; transform: translateX(-50%) scaleX(.25); background: linear-gradient(90deg, transparent, rgba(201,153,104,.5), transparent); transition: transform 1.2s cubic-bezier(.22,.61,.36,1), opacity 1s ease; opacity: .25; }
+    .section.is-visible::after { transform: translateX(-50%) scaleX(1); opacity: .7; }
+    .member-card { --mx: 50%; --my: 50%; }
+    .member-card::before { content: ''; position: absolute; z-index: 2; inset: 0; opacity: 0; pointer-events: none; background: radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.42), transparent 28%); transition: opacity .35s ease; mix-blend-mode: screen; }
+    .member-card:hover::before { opacity: 1; }
+    .member-card .member-info { transform: translateZ(24px); transition: transform .35s ease; }
+    .member-card:hover .member-info { transform: translate3d(0,-5px,24px); }
+    .btn-primary, .btn-secondary, .btn-quiet, .control-button, .nav-circle, .like-button { position: relative; overflow: hidden; }
+    .btn-primary::after, .btn-secondary::after, .btn-quiet::after, .like-button::after { content: ''; position: absolute; inset: 0; pointer-events: none; transform: translateX(-125%) skewX(-18deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.48), transparent); transition: transform .65s ease; }
+    .btn-primary:hover::after, .btn-secondary:hover::after, .btn-quiet:hover::after, .like-button:hover::after { transform: translateX(125%) skewX(-18deg); }
+    .hero-frame { transition: transform .22s ease-out, box-shadow .5s ease; }
+    .hero-frame:hover { box-shadow: 30px 38px 85px rgba(139,70,83,.31), 0 0 0 8px rgba(255,255,255,.35); }
+    .hero-orbit { animation: orbitBreath 9s ease-in-out infinite alternate; }
+    .fortune-box { transition: transform .7s cubic-bezier(.22,.61,.36,1), box-shadow .7s ease; }
+    .fortune-box:hover { transform: translateY(-7px); box-shadow: 0 32px 78px rgba(146,60,85,.28); }
+    .letter-wrap { transition: transform .8s cubic-bezier(.22,.61,.36,1); }
+    .letter-wrap:hover { transform: translateY(-7px) rotate(.4deg); }
+    .repel-word { display: inline-block; transform: translate3d(0,0,0) rotate(0deg); transition: transform .46s cubic-bezier(.16,1,.3,1), color .35s ease, text-shadow .35s ease; will-change: transform; }
+    .repel-word.is-repelled { color: var(--rose-deep); text-shadow: 0 5px 18px rgba(180,94,115,.24); }
+    @keyframes orbitBreath { from { transform: rotate(19deg) scale(.96); } to { transform: rotate(27deg) scale(1.04); } }
+
+    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes float { 0%,100% { transform: translateY(0) rotateX(0); } 50% { transform: translateY(-9px) rotateX(2deg); } }
+    @keyframes ctaPulse { 0%,100% { box-shadow: 0 13px 25px rgba(180,94,115,.27); } 50% { box-shadow: 0 13px 33px rgba(180,94,115,.48), 0 0 0 9px rgba(217,143,154,.08); } }
+    @keyframes heartRise { 0% { opacity: 0; transform: translate(0, 0) scale(.5) rotate(0); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--drift), -180px) scale(1.3) rotate(28deg); } }
+
+    @media (min-width: 640px) {
+      .page-shell { width: min(1160px, calc(100% - 64px)); }
+      .members-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+      .member-card { min-height: 305px; }
+      .fortune-box { padding: 52px 45px 32px; }
+      .fortune-content { grid-template-columns: 1fr auto; }
+      .fortune-action { align-items: flex-end; text-align: right; }
+      .modal-window { grid-template-columns: 1.03fr .97fr; overflow: hidden; }
+      .modal-visual, .modal-visual img { min-height: 580px; }
+      .modal-copy { padding: 55px 40px 35px; }
+    }
+    @media (min-width: 900px) {
+      .page-shell { width: min(1160px, calc(100% - 96px)); }
+      .hero { min-height: 100vh; padding-top: 95px; }
+      .hero-grid { grid-template-columns: 1.02fr .98fr; gap: 60px; }
+      .hero-art { min-height: 560px; }
+      .members-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 17px; }
+      .member-card { min-height: 285px; }
+      .member-card:nth-child(3n + 2) { transform: translateY(21px); }
+      .member-card:nth-child(3n + 2):hover { transform: translateY(16px) rotateX(2deg) rotateY(-2deg) scale(1.025); }
+      .section { padding: 130px 0; }
+      .section-head { margin-bottom: 52px; }
+      .letter-layout { grid-template-columns: .85fr 1.15fr; gap: 95px; }
+      .letter-wrap { min-height: 500px; }
+      .letter-section { padding-top: 105px; }
+    }
+    @media (min-width: 1160px) {
+      .member-card { min-height: 330px; }
+    }
+    @media (max-width: 639px) {
+      .section-head { display: block; }
+      .archive-tools { margin-top: 18px; }
+      .hero-stat strong { font-size: 1.7rem; }
+      .hero-stat span { font-size: .53rem; }
+      .hero-art { min-height: 370px; }
+      .hero-frame { width: min(86vw, 360px); }
+      .letter-wrap { min-height: 570px; }
+      .letter-card { min-height: 545px; }
+      .letter-paper { padding: 32px 22px 38px; }
+      .bouquet-stage { margin-top: -8px; }
+      .modal-backdrop { padding: 10px; }
+      .modal-window { max-height: calc(100vh - 20px); border-radius: 19px; }
+      .modal-visual, .modal-visual img { min-height: 275px; max-height: 43vh; }
+      .modal-copy { padding: 25px 20px 20px; }
+      .modal-quote { margin-top: 23px; font-size: 1rem; }
+      .modal-bottom { padding-top: 20px; }
+      .like-button { padding: 0 12px; font-size: .55rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      [data-reveal] { opacity: 1 !important; transform: none !important; filter: none !important; }
+      .cursor-glow, .scroll-progress { display: none; }
+      .repel-word { transform: none !important; }
+    }
+
+    /* VIP 20/11 — Cinematic intro độc lập, chỉ có trong vip.html */
+    body.vip-lock { overflow: hidden; }
+    .vip-intro { position: fixed; inset: 0; z-index: 500; overflow: hidden; color: #fff6df; background: #061423; opacity: 1; visibility: visible; transition: opacity 1.1s ease, visibility 1.1s ease; }
+    .vip-intro.vip-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    .vip-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .8; }
+    .vip-mist { position: absolute; inset: -15%; pointer-events: none; background: radial-gradient(ellipse at 18% 36%, rgba(192,220,218,.2), transparent 34%), radial-gradient(ellipse at 78% 59%, rgba(117,164,177,.18), transparent 39%), linear-gradient(112deg, transparent 19%, rgba(201,231,222,.12) 46%, transparent 72%); filter: blur(24px); opacity: .74; transform: translateX(-8%) scale(1.15); animation: vipMist 7s ease-in-out infinite alternate; }
+    .vip-mist::before, .vip-mist::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse, rgba(227,240,232,.22), transparent 61%); mix-blend-mode: screen; animation: vipMistPulse 4.5s ease-in-out infinite alternate; }
+    .vip-mist::after { animation-delay: -2.1s; transform: translateX(22%) scale(.85); opacity: .55; }
+    .vip-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(2,9,18,.24) 70%, rgba(1,5,12,.88) 120%); }
+    .vip-scene { position: absolute; inset: 0; display: grid; place-items: center; perspective: 1100px; transform: translateX(0) scale(1); transition: transform 1.6s cubic-bezier(.2,.72,.22,1); }
+    .vip-intro.pan-right .vip-scene { transform: translateX(-5vw) scale(1.04); }
+    .vip-intro.door-pull .vip-scene { transform: translateZ(80px) scale(1.13); }
+    .vip-date-group { position: absolute; z-index: 5; top: 39%; left: 50%; display: flex; align-items: center; justify-content: center; gap: .45vw; transform: translate(-50%, -50%); white-space: nowrap; }
+    .vip-number { position: relative; z-index: 5; color: #f4cf84; font-family: 'Playfair Display', serif; font-size: clamp(5.5rem, 18vw, 14rem); font-weight: 600; line-height: .72; letter-spacing: -.1em; text-shadow: 0 0 8px rgba(255,226,147,.75), 0 0 46px rgba(237,178,73,.4), 0 22px 50px rgba(0,0,0,.55); opacity: 0; filter: blur(16px); will-change: transform, opacity, filter; }
+    .vip-number::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.9) 49%, transparent 61%); mix-blend-mode: screen; transform: translateX(-130%); }
+    .vip-20 { transform: translate3d(70vw,-35vh,-600px) rotate(-28deg) scale(1.45); }
+    .vip-11 { transform: translate3d(38vw,18vh,-500px) rotate(18deg) scale(.62); font-size: clamp(4.8rem, 15vw, 12rem); }
+    .vip-intro.n20-live .vip-20 { opacity: 1; filter: blur(0); transform: translate3d(0,0,0) rotate(-8deg) scale(1); transition: transform 2.1s cubic-bezier(.12,.78,.16,1), opacity .8s ease, filter 1.2s ease; }
+    .vip-intro.n20-live .vip-20::after, .vip-intro.n11-live .vip-11::after { animation: vipGlimmer 1.3s ease .75s both; }
+    .vip-intro.n11-live .vip-11 { opacity: 1; filter: blur(0); transform: translate3d(0,0,0) rotate(5deg) scale(1); transition: transform 1.9s cubic-bezier(.12,.78,.16,1), opacity .8s ease, filter 1.1s ease; }
+    .vip-intro.merge .vip-20 { transform: translate3d(0,0,0) rotate(-3deg) scale(.7); transition: transform 1.7s cubic-bezier(.22,.61,.36,1); }
+    .vip-intro.merge .vip-11 { transform: translate3d(0,0,0) rotate(3deg) scale(.7); transition: transform 1.7s cubic-bezier(.22,.61,.36,1); }
+    .vip-intro.door-live .vip-number, .vip-intro.door-live .vip-slash { opacity: 0; transform: translateY(-8vh) scale(.45); transition: opacity 1s ease, transform 1.2s cubic-bezier(.22,.61,.36,1); }
+    .vip-slash { position: relative; z-index: 6; color: #ffe5a5; font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 9vw, 7rem); font-weight: 300; opacity: 0; transform: scale(.2) rotate(-35deg); text-shadow: 0 0 30px rgba(255,220,127,.8); }
+    .vip-intro.merge .vip-slash { opacity: 1; transform: scale(.85) rotate(-8deg); transition: transform 1.4s cubic-bezier(.16,1,.3,1), opacity .8s ease; }
+    .vip-tree { position: absolute; z-index: 2; right: -7vw; bottom: -5vh; width: min(40vw, 470px); height: 86vh; opacity: .1; transform: translateX(14vw); transition: transform 1.7s cubic-bezier(.22,.61,.36,1), opacity 1.4s ease; filter: drop-shadow(0 0 30px rgba(110,159,143,.18)); }
+    .vip-intro.pan-right .vip-tree { opacity: .9; transform: translateX(0); }
+    .vip-tree-trunk { position: absolute; right: 35%; bottom: 0; width: 31%; height: 74%; border-radius: 47% 54% 10% 20%; background: linear-gradient(90deg, #111e25, #4b4a36 48%, #0b1820); transform: rotate(5deg); box-shadow: inset 17px 0 rgba(198,171,112,.11), 20px 0 40px rgba(0,0,0,.55); }
+    .vip-tree-trunk::before, .vip-tree-trunk::after { content: ''; position: absolute; left: 10%; top: 10%; width: 180%; height: 16%; border-radius: 50%; background: #18272a; transform: rotate(-27deg); }
+    .vip-tree-trunk::after { left: -100%; top: 29%; width: 175%; transform: rotate(22deg); }
+    .vip-crown { position: absolute; right: 3%; top: 4%; width: 90%; height: 48%; border-radius: 49% 56% 42% 58%; background: radial-gradient(circle at 28% 36%, #5f806e, transparent 20%), radial-gradient(circle at 67% 38%, #395c57, transparent 26%), radial-gradient(circle at 45% 70%, #24444a, #112734 68%); filter: blur(2px); box-shadow: 0 0 80px rgba(76,139,124,.18); }
+    .vip-doorway { position: absolute; z-index: 4; display: flex; width: min(70vw, 650px); height: min(80vh, 650px); align-items: stretch; justify-content: center; opacity: 0; transform: translateZ(-500px) scale(.55); transition: transform 1.5s cubic-bezier(.12,.78,.16,1), opacity 1s ease; filter: drop-shadow(0 35px 40px rgba(0,0,0,.55)); }
+    .vip-intro.door-live .vip-doorway { opacity: 1; transform: translateZ(0) scale(1); }
+    .vip-door { position: relative; width: 50%; overflow: hidden; border: 4px solid #604936; background: linear-gradient(120deg, #1d1a18, #5b3e2e 28%, #2d211b 55%, #684731); box-shadow: inset 0 0 0 8px rgba(27,18,15,.68), inset 0 0 50px rgba(0,0,0,.8); transition: transform 1.8s cubic-bezier(.16,1,.3,1), box-shadow 1.2s ease; }
+    .vip-door::before { content: ''; position: absolute; inset: 8%; border: 2px solid rgba(198,158,91,.32); box-shadow: inset 0 0 0 10px rgba(27,18,15,.28), inset 0 0 20px rgba(255,213,131,.1); }
+    .vip-door::after { content: ''; position: absolute; inset: 16% 23%; border: 2px solid rgba(215,176,105,.28); border-radius: 5px; box-shadow: 0 0 20px rgba(255,201,111,.08); }
+    .vip-door-left { transform-origin: left center; }
+    .vip-door-right { transform-origin: right center; }
+    .vip-intro.door-open .vip-door-left { transform: perspective(800px) rotateY(-74deg); box-shadow: inset 0 0 0 8px rgba(27,18,15,.68), -40px 0 70px rgba(255,242,194,.22); }
+    .vip-intro.door-open .vip-door-right { transform: perspective(800px) rotateY(74deg); box-shadow: inset 0 0 0 8px rgba(27,18,15,.68), 40px 0 70px rgba(255,242,194,.22); }
+    .vip-door-light { position: absolute; z-index: 3; inset: 7% 28%; opacity: .4; background: radial-gradient(ellipse, #fffdf0 0%, #f6df9f 17%, rgba(220,172,83,.3) 42%, transparent 72%); filter: blur(13px); transform: scale(.4); transition: transform 1.2s ease, opacity 1.2s ease; }
+    .vip-intro.door-open .vip-door-light { opacity: 1; transform: scale(3.4); }
+    .vip-door-knob { position: absolute; z-index: 5; top: 50%; width: 33px; height: 33px; border: 4px solid #d9ad68; border-radius: 50%; background: radial-gradient(circle at 30% 28%, #fff1b9, #96652d 42%, #332418 75%); box-shadow: 0 0 15px rgba(255,215,125,.45); transform: translateY(-50%); }
+    .vip-door-left .vip-door-knob { right: 10px; }
+    .vip-door-right .vip-door-knob { left: 10px; }
+    .vip-brand { position: absolute; z-index: 8; top: 50%; left: 50%; display: grid; place-items: center; width: 106px; height: 106px; color: #2c1d15; border: 5px solid #c99a51; border-radius: 50%; background: radial-gradient(circle at 34% 27%, #fff1b4, #ba8541 42%, #5f3b1e 93%); font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; letter-spacing: .04em; transform: translate(-50%,-50%); box-shadow: 0 0 0 9px rgba(43,27,18,.58), 0 0 38px rgba(255,215,124,.3); transition: opacity .55s ease, transform .7s ease; }
+    .vip-intro.counting .vip-brand { opacity: 0; transform: translate(-50%,-50%) scale(.5); }
+    .vip-countdown { position: absolute; z-index: 12; top: 50%; left: 50%; color: #fffdf2; font-family: 'Playfair Display', serif; font-size: clamp(5.5rem, 18vw, 14rem); line-height: 1; text-shadow: 0 0 25px #fff, 0 0 80px #e6bc64; opacity: 0; transform: translate(-50%,-50%) scale(1.35); pointer-events: none; }
+    .vip-countdown.show { animation: vipCount 1.15s cubic-bezier(.22,.72,.22,1) both; }
+    .vip-caption { position: absolute; z-index: 15; left: 50%; bottom: 9vh; width: min(90vw, 680px); text-align: center; color: rgba(233,238,220,.78); font-family: 'Montserrat', sans-serif; font-size: .63rem; font-weight: 700; letter-spacing: .28em; text-transform: uppercase; opacity: 0; transform: translate(-50%, 18px); transition: opacity .8s ease, transform .8s ease; }
+    .vip-intro.n20-live .vip-caption, .vip-intro.door-live .vip-caption { opacity: 1; transform: translate(-50%,0); }
+    .vip-skip { position: absolute; z-index: 20; right: 22px; bottom: 20px; padding: 9px 13px; color: rgba(248,238,207,.72); background: rgba(3,13,23,.28); border: 1px solid rgba(246,220,158,.28); border-radius: 999px; font-family: 'Montserrat', sans-serif; font-size: .56rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(9px); }
+    .vip-skip:hover { color: #fff4cb; border-color: rgba(246,220,158,.7); background: rgba(3,13,23,.52); }
+    @keyframes vipMist { from { transform: translateX(-8%) scale(1.15); } to { transform: translateX(10%) scale(1.22); } }
+    @keyframes vipMistPulse { from { opacity: .35; transform: translateX(-8%) scale(.9); } to { opacity: .8; transform: translateX(13%) scale(1.16); } }
+    @keyframes vipGlimmer { from { transform: translateX(-130%); } to { transform: translateX(130%); } }
+    @keyframes vipCount { 0% { opacity: 0; transform: translate(-50%,-50%) scale(1.35); filter: blur(8px); } 25% { opacity: 1; transform: translate(-50%,-50%) scale(1); filter: blur(0); } 72% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(.78); filter: blur(5px); } }
+    @media (max-width: 600px) { .vip-tree { right: -34vw; width: 78vw; opacity: .45; } .vip-doorway { width: 88vw; height: 67vh; } .vip-brand { width: 78px; height: 78px; font-size: 1.3rem; } .vip-door-knob { width: 24px; height: 24px; } .vip-caption { bottom: 13vh; font-size: .49rem; letter-spacing: .17em; } .vip-skip { right: 14px; bottom: 14px; } .vip-number { font-size: clamp(4.5rem, 17vw, 8rem); } .vip-20 { left: 12vw; } .vip-11 { right: 12vw; font-size: clamp(4rem, 14vw, 7rem); } }
+    @media (prefers-reduced-motion: reduce) { .vip-mist { animation: none; } .vip-scene, .vip-door, .vip-tree, .vip-number { transition-duration: .2s !important; } }
+
+    /* VIP 20/11 — visual pass công nghệ cao, ưu tiên compositing mượt */
+    .vip-intro { contain: layout paint; isolation: isolate; background: radial-gradient(circle at 50% 47%, #17364a 0%, #091a2c 42%, #020813 100%); }
+    .vip-intro::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .22; background-image: linear-gradient(rgba(143,207,220,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(143,207,220,.18) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, transparent 0%, #000 32%, #000 70%, transparent 100%); transform: perspective(520px) rotateX(58deg) translateY(30%); transform-origin: center bottom; animation: vipGridDrift 9s linear infinite; }
+    .vip-intro::after { content: ''; position: absolute; inset: 0; z-index: 17; pointer-events: none; opacity: .18; background: repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0, rgba(255,255,255,.06) 1px, transparent 1px, transparent 5px); mix-blend-mode: screen; }
+    .vip-canvas { z-index: 3; opacity: .72; mix-blend-mode: screen; }
+    .vip-mist { z-index: 4; opacity: .44; filter: blur(32px); }
+    .vip-vignette { z-index: 5; background: radial-gradient(circle at 50% 50%, transparent 13%, rgba(1,7,16,.13) 52%, rgba(1,5,12,.88) 112%); }
+    .vip-scene { z-index: 6; transform: translateZ(0); }
+    .vip-horizon { position: absolute; z-index: 1; top: 49%; left: 50%; width: min(80vw, 1050px); height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, rgba(125,227,221,.7), rgba(255,210,127,.8), transparent); box-shadow: 0 0 24px rgba(91,218,223,.5); opacity: .48; }
+    .vip-grid { position: absolute; z-index: 1; top: 52%; left: 50%; width: min(92vw, 1250px); height: 42vh; transform: translateX(-50%) perspective(420px) rotateX(61deg); transform-origin: top center; opacity: .3; background-image: linear-gradient(rgba(110,214,225,.34) 1px, transparent 1px), linear-gradient(90deg, rgba(110,214,225,.25) 1px, transparent 1px); background-size: 54px 34px; mask-image: linear-gradient(to bottom, #000, transparent 90%); animation: vipGridFloor 5.5s linear infinite; }
+    .vip-hud { position: absolute; z-index: 16; top: 5.5vh; left: 50%; display: flex; width: min(88vw, 920px); justify-content: space-between; color: rgba(186,233,229,.7); font-family: 'Montserrat', sans-serif; font-size: .52rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; opacity: .72; transform: translateX(-50%); }
+    .vip-hud span { display: inline-flex; align-items: center; gap: 8px; }
+    .vip-hud span::before { content: ''; display: inline-block; width: 6px; height: 6px; border: 1px solid #f0cd7c; border-radius: 50%; box-shadow: 0 0 10px #f0cd7c; }
+    .vip-hud::after { content: 'A16 // SYSTEM ONLINE'; position: absolute; top: 23px; left: 0; color: rgba(232,195,111,.46); font-size: .42rem; letter-spacing: .3em; }
+    .vip-energy-ring { position: absolute; z-index: 2; width: min(48vw, 490px); aspect-ratio: 1; border: 1px solid rgba(114,218,220,.26); border-radius: 50%; box-shadow: 0 0 45px rgba(74,208,218,.12), inset 0 0 45px rgba(74,208,218,.08); opacity: 0; transform: scale(.45) rotate(0deg); transition: opacity 1.2s ease, transform 1.8s cubic-bezier(.16,1,.3,1); }
+    .vip-energy-ring::before, .vip-energy-ring::after { content: ''; position: absolute; inset: 8%; border: 1px dashed rgba(242,203,123,.36); border-radius: 50%; }
+    .vip-energy-ring::after { inset: 20%; border-style: solid; border-color: rgba(122,226,226,.38) transparent; animation: vipSpin 8s linear infinite; }
+    .vip-intro.n20-live .vip-energy-ring { opacity: 1; transform: scale(1) rotate(30deg); }
+    .vip-intro.door-live .vip-energy-ring { transform: scale(.72) rotate(120deg); opacity: .55; }
+    .vip-doorway { width: min(54vw, 570px); height: min(70vh, 570px); z-index: 7; }
+    .vip-door { border-color: #4f6770; background: linear-gradient(110deg, #08141e, #203b46 28%, #0b1b29 55%, #3e5048); box-shadow: inset 0 0 0 8px rgba(4,11,19,.75), inset 0 0 70px rgba(55,214,218,.12), 0 0 45px rgba(48,182,197,.1); }
+    .vip-door::before { border-color: rgba(131,221,218,.35); box-shadow: inset 0 0 0 10px rgba(9,29,39,.45), inset 0 0 24px rgba(117,224,219,.15); }
+    .vip-door::after { border-color: rgba(240,199,112,.34); box-shadow: 0 0 22px rgba(104,224,221,.1); }
+    .vip-door-light { inset: 7% 28%; background: radial-gradient(ellipse, #fff 0%, #e7f9e7 17%, rgba(96,226,222,.35) 43%, transparent 72%); }
+    .vip-brand { width: 92px; height: 92px; color: #09202b; border-color: #e4bd6d; background: radial-gradient(circle at 34% 27%, #fff5c8, #b6904e 42%, #253d40 93%); box-shadow: 0 0 0 9px rgba(7,27,36,.7), 0 0 40px rgba(108,226,221,.46); }
+    .vip-intro.door-open .vip-door-light { transform: scale(4.8); }
+    .vip-intro.door-open .vip-energy-ring { opacity: 0; transform: scale(1.5); }
+    .vip-caption { bottom: 8vh; color: rgba(192,232,226,.72); }
+    @keyframes vipGridDrift { from { background-position: 0 0, 0 0; } to { background-position: 0 48px, 48px 0; } }
+    @keyframes vipGridFloor { from { background-position: 0 0, 0 0; } to { background-position: 0 34px, 54px 0; } }
+    @keyframes vipSpin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { .vip-hud { top: 4vh; font-size: .43rem; letter-spacing: .12em; } .vip-hud::after { top: 18px; font-size: .35rem; } .vip-energy-ring { width: 72vw; } .vip-doorway { width: 84vw; height: 62vh; } }
+    /* Date lockup: một node duy nhất, không render 20 và 10 thành các mảnh riêng */
+    .vip-date { position: absolute; z-index: 5; top: 39%; left: 50%; overflow: hidden; color: #f4cf84; font-family: 'Playfair Display', serif; font-size: clamp(5rem, 15vw, 12rem); font-weight: 600; line-height: .82; letter-spacing: -.08em; white-space: nowrap; opacity: 0; filter: blur(18px); text-shadow: 0 0 8px rgba(255,226,147,.75), 0 0 46px rgba(237,178,73,.4), 0 22px 50px rgba(0,0,0,.55); transform: translate(-50%, -50%) translate3d(72vw,-30vh,-600px) rotate(-24deg) scale(1.35); transition: transform 2.2s cubic-bezier(.12,.78,.16,1), opacity 1s ease, filter 1.3s ease; will-change: transform, opacity, filter; }
+    .vip-date::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.95) 49%, transparent 61%); mix-blend-mode: screen; transform: translateX(-130%); }
+    .vip-intro.n20-live .vip-date { opacity: 1; filter: blur(0); transform: translate(-50%, -50%) translate3d(0,0,0) rotate(-3deg) scale(1); }
+    .vip-intro.n20-live .vip-date::after { animation: vipGlimmer 1.5s ease 1s both; }
+    .vip-intro.merge .vip-date { transform: translate(-50%, -50%) scale(.82); transition-duration: 1.8s; }
+    .vip-intro.door-live .vip-date { opacity: 0; filter: blur(8px); transform: translate(-50%, -58%) scale(.48); transition: opacity 1s ease, transform 1.25s cubic-bezier(.22,.61,.36,1), filter 1s ease; }
+    @media (max-width: 600px) { .vip-date { font-size: clamp(4rem, 17vw, 8rem); } }
+    /* Date pair: 20 bay vào trước, 10 bay vào sau, slash chỉ hiện lúc hợp thể */
+    .vip-date-pair { position: absolute; z-index: 5; top: 39%; left: 50%; display: flex; align-items: center; justify-content: center; gap: clamp(1.25rem, 2.6vw, 2.8rem); transform: translate(-50%, -50%); white-space: nowrap; }
+    .vip-date-pair::before { content: '/'; position: absolute; z-index: 2; top: 50%; left: 50%; color: #ffe5a5; font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 9vw, 7rem); font-weight: 300; line-height: 1; opacity: 0; text-shadow: 0 0 30px rgba(255,220,127,.8); transform: translate(-50%, -50%) rotate(-8deg) scale(.55); transition: opacity .9s ease, transform 1.3s cubic-bezier(.16,1,.3,1); pointer-events: none; }
+    .vip-date-pair .vip-number::after { display: none; }
+    .vip-date-pair .vip-number { position: relative; left: auto; right: auto; top: auto; font-size: clamp(5rem, 15vw, 12rem); }
+    .vip-date-pair .vip-20 { opacity: 0; filter: blur(18px); transform: translate3d(-72vw,-30vh,-600px) rotate(-24deg) scale(1.35); transition: transform 2.2s cubic-bezier(.12,.78,.16,1), opacity 1s ease, filter 1.3s ease; }
+    .vip-date-pair .vip-10 { opacity: 0; filter: blur(18px); transform: translate3d(72vw,30vh,-600px) rotate(24deg) scale(1.2); transition: transform 2.2s cubic-bezier(.12,.78,.16,1), opacity 1s ease, filter 1.3s ease; }
+    .vip-intro.n20-live .vip-date-pair .vip-20 { opacity: 1; filter: blur(0); transform: translate3d(0,0,0) rotate(-3deg) scale(1); }
+    .vip-intro.n10-live .vip-date-pair .vip-10 { opacity: 1; filter: blur(0); transform: translate3d(0,0,0) rotate(3deg) scale(1); }
+    .vip-intro.merge .vip-date-pair { transform: translate(-50%, -50%) scale(.82); }
+    .vip-intro.merge .vip-date-pair .vip-20, .vip-intro.merge .vip-date-pair .vip-10 { transform: translate3d(0,0,0) rotate(0deg) scale(.78); transition-duration: 1.7s; }
+    .vip-intro.merge .vip-date-pair::before { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(.85); }
+    .vip-intro.door-live .vip-date-pair { opacity: 0; filter: blur(8px); transform: translate(-50%, -58%) scale(.48); transition: opacity 1s ease, transform 1.25s cubic-bezier(.22,.61,.36,1), filter 1s ease; }
+    @media (max-width: 600px) { .vip-date-pair { gap: 1.05rem; } .vip-date-pair .vip-number { font-size: clamp(4rem, 16vw, 8rem); } }
+    /* Final lockup: ba tọa độ độc lập, chung một tâm hình học */
+    .vip-scene > .vip-number.vip-20, .vip-scene > .vip-number.vip-10, .vip-scene > .vip-slash { position: absolute; top: 39%; left: 50%; right: auto; }
+    .vip-scene > .vip-number::after { display: none; }
+    .vip-scene > .vip-number.vip-20 { z-index: 5; opacity: 0; filter: blur(18px); transform: translate(-106%, -50%) translate3d(-72vw,-30vh,-600px) rotate(-24deg) scale(1.35); transition: transform 2.2s cubic-bezier(.12,.78,.16,1), opacity 1s ease, filter 1.3s ease; }
+    .vip-scene > .vip-number.vip-10 { z-index: 1; opacity: 0; filter: blur(5px); transform: translate(6%, -50%) translate3d(22vw,5vh,-420px) rotate(24deg) scale(1.2); transition: transform 2.8s cubic-bezier(.12,.78,.16,1), opacity 1.3s ease, filter 1.6s ease, z-index 0s linear 0s; }
+    .vip-scene > .vip-slash { z-index: 6; color: #ffe5a5; font-family: 'Montserrat', sans-serif; font-size: clamp(3rem, 9vw, 7rem); font-weight: 300; line-height: 1; opacity: 0; text-shadow: 0 0 30px rgba(255,220,127,.8); transform: translate(-50%, -50%) rotate(-8deg) scale(.55); transition: opacity .9s ease, transform 1.3s cubic-bezier(.16,1,.3,1); }
+    .vip-intro.n20-live .vip-scene > .vip-number.vip-20 { opacity: 1; filter: blur(0); transform: translate(-106%, -50%) translate3d(0,0,0) rotate(-3deg) scale(1); }
+    .vip-intro.n10-live .vip-scene > .vip-number.vip-10 { z-index: 1; opacity: .52; filter: blur(5px); transform: translate(6%, -50%) translate3d(22vw,5vh,-420px) rotate(18deg) scale(1.15); transition: opacity 1.2s ease, filter 1.4s ease; }
+    .vip-intro.n10-escape .vip-scene > .vip-number.vip-10 { z-index: 5; opacity: 1; filter: blur(0); transform: translate(6%, -50%) translate3d(0,0,0) rotate(3deg) scale(1); transition: transform 2.8s cubic-bezier(.12,.78,.16,1), opacity 1.3s ease, filter 1.6s ease, z-index 0s linear 0s; }
+    .vip-intro.merge .vip-scene > .vip-number.vip-20, .vip-intro.merge .vip-scene > .vip-number.vip-10 { transform: translate(-106%, -50%) rotate(0deg) scale(.82); transition-duration: 1.7s; }
+    .vip-intro.merge .vip-scene > .vip-number.vip-10 { transform: translate(6%, -50%) rotate(0deg) scale(.82); }
+    .vip-intro.merge .vip-scene > .vip-slash { opacity: 1; transform: translate(-50%, -50%) rotate(-8deg) scale(.85); }
+    .vip-intro.door-live .vip-scene > .vip-number.vip-20, .vip-intro.door-live .vip-scene > .vip-number.vip-10, .vip-intro.door-live .vip-scene > .vip-slash { opacity: 0; filter: blur(8px); transform: translate(-50%, -58%) scale(.48); transition: opacity 1s ease, transform 1.25s cubic-bezier(.22,.61,.36,1), filter 1s ease; }
+    @media (max-width: 600px) { .vip-scene > .vip-number.vip-20 { transform: translate(-108%, -50%) translate3d(-72vw,-30vh,-600px) rotate(-24deg) scale(1.35); } .vip-intro.n20-live .vip-scene > .vip-number.vip-20 { transform: translate(-108%, -50%) translate3d(0,0,0) rotate(-3deg) scale(1); } .vip-intro.merge .vip-scene > .vip-number.vip-20 { transform: translate(-108%, -50%) rotate(0deg) scale(.82); } }
+  </style>
+</head>
+<body>
+  <div class="ambient-wash" aria-hidden="true"></div>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+  <canvas id="firework-canvas" aria-hidden="true"></canvas>
+
+  <div class="top-controls" aria-label="Điều khiển trải nghiệm">
+    <button class="control-button" id="fx-toggle" type="button" aria-label="Tắt hiệu ứng nền" title="Bật/tắt hiệu ứng nền"><i data-lucide="sparkles"></i></button>
+    <button class="control-button" id="music-toggle" type="button" aria-label="Bật nhạc nền" title="Bật/tắt nhạc nền"><i data-lucide="music-2"></i></button>
+  </div>
+
+  <!-- Intro VIP 20/11 độc lập: không thay đổi nội dung website gốc -->
+  <section class="vip-intro" id="vip-intro" aria-label="Màn mở đầu 20 tháng 11 của A16">
+    <canvas class="vip-canvas" id="vip-canvas" aria-hidden="true"></canvas>
+    <div class="vip-mist" aria-hidden="true"></div>
+    <div class="vip-vignette" aria-hidden="true"></div>
+    <div class="vip-hud" aria-hidden="true"><span>20 / 10 · 2026</span><span>HONOR THE WOMEN</span></div>
+    <div class="vip-scene" aria-hidden="true">
+      <div class="vip-grid"></div><div class="vip-horizon"></div><div class="vip-energy-ring"></div>
+      <div class="vip-tree"><div class="vip-crown"></div><div class="vip-tree-trunk"></div></div>
+      <div class="vip-number vip-20">20</div><div class="vip-slash">/</div><div class="vip-number vip-10">10</div>
+      <div class="vip-doorway">
+        <div class="vip-door vip-door-left"><span class="vip-door-knob"></span></div>
+        <div class="vip-door vip-door-right"><span class="vip-door-knob"></span></div>
+        <div class="vip-door-light"></div>
+        <div class="vip-brand">A16</div>
+      </div>
+      <div class="vip-countdown" id="vip-countdown"></div>
+    </div>
+    <p class="vip-caption">Một cánh cửa · Một lời tri ân · Một tập thể A16</p>
+    <button class="vip-skip" id="vip-skip" type="button">Bỏ qua intro</button>
+  </section>
+
+  <section class="intro-screen" id="intro-screen" aria-label="Màn hình mở đầu">
+    <div class="intro-inner">
+      <div class="bouquet-stage" id="bouquet-stage" aria-hidden="true">
+        <div class="bouquet-tilt" id="bouquet-tilt">
+          <div class="bouquet-glow"></div>
+          <div class="stem"></div><div class="stem s2"></div><div class="stem s3"></div>
+          <div class="leaf l1"></div><div class="leaf l2"></div><div class="leaf l3"></div>
+          <div class="flower f1"></div><div class="flower f2"></div><div class="flower f3"></div><div class="flower f4"></div><div class="flower f5"></div>
+          <div class="bouquet-ribbon"></div>
+        </div>
+      </div>
+      <div class="intro-kicker font-label tracking-luxe">Một món quà nhỏ · Một vườn hoa lớn</div>
+      <h1 class="intro-title font-display">Gửi những bông hoa<br><em>rực rỡ nhất</em></h1>
+      <p class="intro-subtitle" id="typewriter"><span class="type-cursor"></span></p>
+      <div class="intro-cta">
+        <button class="btn-primary" id="open-gift" type="button"><span>Mở quà ngay</span><i data-lucide="arrow-right"></i></button>
+      </div>
+      <div class="intro-note">Chạm vào để bước vào khu vườn của chúng mình</div>
+    </div>
+  </section>
+
+  <main class="main-content" id="main-content" aria-hidden="true">
+    <header class="hero page-shell">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">20 tháng 10 · 2026</div>
+          <h1 class="font-display text-balance">Mỗi bạn là một <em>cánh hoa</em>.</h1>
+          <p class="hero-lead">Và khi đứng cạnh nhau, 30 cánh hoa ấy làm nên một mùa rực rỡ — dịu dàng, thông minh, tài năng và đầy năng lượng tích cực.</p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#memory"><span>Ghé thăm thư viện</span><i data-lucide="arrow-down"></i></a>
+            <a class="btn-secondary" href="#letter"><span>Đọc lời chúc</span><i data-lucide="heart"></i></a>
+          </div>
+          <div class="hero-stats" aria-label="Thông tin kỷ niệm">
+            <div class="hero-stat"><strong>30</strong><span>gương mặt</span></div>
+            <div class="hero-stat"><strong>∞</strong><span>lời yêu thương</span></div>
+            <div class="hero-stat"><strong>01</strong><span>mùa đáng nhớ</span></div>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="hero-orbit"></div>
+          <!-- Ảnh tập thể do người dùng cung cấp, có thể thay tại assets/class-photo.webp -->
+          <div class="hero-frame"><img src="assets/class-photo.webp" alt="Ảnh tập thể 30 bạn nữ trong ngày kỷ niệm" loading="eager"><div class="hero-sticker">Vườn<br>Hoa<br>20/10</div></div>
+          <div class="hero-caption">Một trang dành riêng cho chúng mình</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section page-shell" id="memory">
+      <div class="section-head">
+        <div class="section-head-copy">
+          <div class="eyebrow">The memory garden</div>
+          <h2 class="section-title font-display">Những nhân vật chính<br><em>của ngày hôm nay!</em></h2>
+          <p class="section-intro">Mỗi khung hình là một nét riêng, một nguồn năng lượng riêng. Chạm vào từng bông hoa để đọc lời chúc được viết riêng cho bạn.</p>
+        </div>
+        <div class="archive-tools"><strong>30</strong><span>chân dung<br>được gọi tên</span></div>
+      </div>
+      <div class="members-grid" id="members-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="section letter-section page-shell" id="letter">
+      <div class="letter-layout">
+        <div class="letter-copy">
+          <div class="eyebrow">A16 · Tháng đầu tiên gắn bó</div>
+          <h2 class="section-title font-display">Gửi tới ba mươi bạn nữ<br><em>của A16</em>.</h2>
+          <p>Một tấm thiệp gửi chung đến các bạn nữ của lớp sau tháng đầu tiên gắn bó. Thời gian một tháng tuy chưa dài, nhưng đủ để chúng ta làm quen và bước đầu thấu hiểu nhau hơn trong môi trường mới. Cảm ơn sự đồng hành của mọi người đã giúp cho lớp học trở nên sinh động và nền nếp hơn. Chúc tập thể lớp chúng ta sẽ luôn giữ vững tinh thần đoàn kết, cùng nhau vượt qua mọi thử thách phía trước và đạt được những kết quả tốt nhất.</p>
+          <button class="btn-secondary" id="letter-toggle" type="button"><i data-lucide="mail-open"></i><span>Mở thiệp</span></button>
+        </div>
+        <div class="letter-wrap">
+          <div class="letter-card" id="letter-card">
+            <article class="letter-paper">
+              <h3>Gửi tới ba mươi bạn nữ của A16,</h3>
+              <p>Một tấm thiệp gửi chung đến các bạn nữ của lớp sau tháng đầu tiên gắn bó. Thời gian một tháng tuy chưa dài, nhưng đủ để chúng ta làm quen và bước đầu thấu hiểu nhau hơn trong môi trường mới. Cảm ơn sự đồng hành của mọi người đã giúp cho lớp học trở nên sinh động và nền nếp hơn. Chúc tập thể lớp chúng ta sẽ luôn giữ vững tinh thần đoàn kết, cùng nhau vượt qua mọi thử thách phía trước và đạt được những kết quả tốt nhất.</p>
+              <div class="letter-sign">Thương mến, từ tất cả chúng mình ♡</div>
+            </article>
+            <button class="letter-cover" id="letter-cover" type="button" aria-label="Mở tấm thiệp 20/10">
+              <div class="letter-cover-content"><small>Happy Vietnamese Women's Day</small><h3>Chúc mừng<br>20 · 10</h3></div>
+              <div class="letter-open-label"><span>Chạm để mở</span><span>Chạm để gấp lại</span></div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section fortune-section page-shell" id="fortune">
+      <div class="fortune-box">
+        <div class="fortune-content">
+          <div>
+            <div class="fortune-kicker">Secret garden · lucky note</div>
+            <h2 class="fortune-title">Hộp quà<br>bí mật.</h2>
+            <p class="fortune-text">Một tiết mục đang đón chờ ⏳</p>
+          </div>
+          <div class="fortune-action">
+            <button class="btn-secondary" id="draw-fortune" type="button"><i data-lucide="gift"></i><span>Nhận lộc 20/10</span></button>
+            <span class="text-xs text-white/70">Mỗi lần bấm là một bất ngờ mới</span>
+          </div>
+        </div>
+        <div class="fortune-result" id="fortune-result">
+          <div class="fortune-answer"><p class="fortune-gift-title">Tiết mục tặng quà 🎁!</p></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer page-shell"><span class="footer-mark">Vườn Hoa Rực Rỡ</span>Được viết bằng thật nhiều yêu thương · 20/10</footer>
+  </main>
+
+  <div class="modal-backdrop" id="member-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Chi tiết lời chúc">
+    <div class="modal-window" id="modal-window">
+      <button class="modal-close" id="modal-close" type="button" aria-label="Đóng photobook"><i data-lucide="x"></i></button>
+      <div class="modal-visual"><img id="modal-image" src="" alt=""><div class="modal-photo-label" id="modal-photo-label"></div></div>
+      <div class="modal-copy">
+        <div class="modal-count" id="modal-count"></div>
+        <div class="modal-birthday" id="modal-birthday"></div>
+        <h2 id="modal-name" class="font-display"></h2>
+        <p class="modal-quote" id="modal-quote"></p>
+        <div class="modal-bottom">
+          <button class="like-button" id="like-button" type="button"><i data-lucide="heart"></i><span>Thả tim</span></button>
+          <div class="modal-nav"><button class="nav-circle" id="prev-member" type="button" aria-label="Bạn trước"><i data-lucide="arrow-left"></i></button><button class="nav-circle" id="next-member" type="button" aria-label="Bạn tiếp theo"><i data-lucide="arrow-right"></i></button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="heart-layer" aria-hidden="true"></div>
+
+  <!-- Nhạc nền do người dùng cung cấp; đổi file tại assets/background-music.mp3 nếu cần -->
+  <audio id="bg-music" loop preload="metadata" src="assets/background-music.mp3"></audio>
+
+  <script>
+    /* ================================================================
+       KHỐI 1 — DỮ LIỆU 30 BẠN NỮ
+       Đây là nơi thay tên, ngày sinh, ảnh thật và lời chúc riêng.
+       Mỗi object phải giữ đủ 5 trường: id, name, birthday, image, wish.
+       Ảnh mẫu đang dùng Unsplash; chỉ cần thay URL trong trường image.
+       ================================================================ */
+    const members = [
+      { id: 1, name: 'Nguyễn Thị Hạnh', birthday: '09/05/2011', image: 'assets/an-nhien.jpg', wish: 'Nguyễn Thị Hạnh, chúc bạn luôn giữ được sự hiền hòa, vững vàng và tìm thấy thật nhiều niềm vui trong từng ngày đến lớp.' },
+      { id: 2, name: 'Nguyễn Thị Thanh Hà', birthday: '27/04/2011', image: 'assets/bao-ngoc.jpg', wish: 'Nguyễn Thị Thanh Hà, mong bạn luôn tự tin tỏa sáng, dịu dàng với chính mình và bền bỉ chạm tới những điều mình mơ ước.' },
+      { id: 3, name: 'Thái Phương Lan', birthday: '23/07/2011', image: 'assets/chi-mai.jpg', wish: 'Thái Phương Lan, chúc bạn có một hành trình thật rực rỡ, luôn giữ nét duyên riêng và can đảm bước về phía những cơ hội mới.' },
+      { id: 4, name: 'Nguyễn Trà My', birthday: '19/09/2011', image: 'assets/dieu-linh.jpg', wish: 'Nguyễn Trà My, mong sự tinh tế và chân thành của bạn luôn được trân trọng, để mỗi ngày đều có thêm những cuộc gặp thật đẹp.' },
+      { id: 5, name: 'Nguyễn Hà Vy', birthday: '10/03/2011', image: 'assets/gia-han.jpg', wish: 'Nguyễn Hà Vy, chúc bạn luôn vui vẻ, tự tin và đủ bản lĩnh để biến những dự định trong lòng thành những kỷ niệm đáng tự hào.' },
+      { id: 6, name: 'Đinh Thị Thu Ngân', birthday: '08/10/2011', image: 'assets/ha-my.jpg', wish: 'Đinh Thị Thu Ngân, mong bạn luôn lấp lánh như một món quà quý, học tập thật tốt và có thật nhiều ngày bình yên bên những người thương.' },
+      { id: 7, name: 'Phạm Thị Thùy Linh', birthday: '08/07/2011', image: 'assets/hai-yen.webp', wish: 'Phạm Thị Thùy Linh, chúc bạn luôn mềm mại mà mạnh mẽ, biết yêu thương bản thân và kiên định với con đường mình đã chọn.' },
+      { id: 8, name: 'Nguyễn Hà My', birthday: '25/07/2011', image: 'assets/khanh-ly.jpg', wish: 'Nguyễn Hà My, mong nụ cười của bạn luôn làm những ngày bình thường trở nên ấm áp, và mọi ước mơ đều tìm được mùa để nở.' },
+      { id: 9, name: 'Nguyễn Thị Linh An', birthday: '27/12/2011', image: 'assets/kim-anh.jpg', wish: 'Nguyễn Thị Linh An, chúc bạn luôn an nhiên trong tâm hồn, sáng suốt trong lựa chọn và rạng rỡ theo cách rất riêng của mình.' },
+      { id: 10, name: 'Lê Yến Nhi', birthday: '25/12/2011', image: 'assets/linh-chi.jpg', wish: 'Lê Yến Nhi, mong bạn luôn trẻ trung, nhanh nhẹn và mang theo thật nhiều năng lượng tích cực đến mọi nơi mình đi qua.' },
+      { id: 11, name: 'Vũ Lê Hồng Hạnh', birthday: '20/05/2011', image: 'assets/mai-anh.jpg', wish: 'Vũ Lê Hồng Hạnh, chúc bạn luôn hạnh phúc, tự tin và được bao quanh bởi những người nhìn thấy, yêu quý và nâng niu sự chân thành của bạn.' },
+      { id: 12, name: 'Vũ Ngọc Diệp', birthday: '08/10/2011', image: 'assets/minh-chau.jpg', wish: 'Vũ Ngọc Diệp, mong bạn luôn trong trẻo, sáng tạo và đủ dũng khí để biến những ý tưởng đẹp thành dấu ấn của riêng mình.' },
+      { id: 13, name: 'Nguyễn Ngọc Bảo Trang', birthday: '15/08/2011', image: 'assets/ngoc-ha.jpg', wish: 'Nguyễn Ngọc Bảo Trang, chúc bạn luôn được yêu thương, học tập tiến bộ và giữ mãi vẻ đẹp của một trái tim tử tế.' },
+      { id: 14, name: 'Nguyễn Thị Thu Hiền', birthday: '14/02/2011', image: 'assets/ngoc-lan.jpg', wish: 'Nguyễn Thị Thu Hiền, mong bạn luôn hiền hòa nhưng không ngại tỏa sáng, gặp nhiều may mắn và có một hành trình thật nhẹ nhàng.' },
+      { id: 15, name: 'Nguyễn Phương Vy', birthday: '06/05/2011', image: 'assets/phuong-anh.jpg', wish: 'Nguyễn Phương Vy, chúc bạn luôn vui vẻ, nhiệt thành và tự tin bước qua mọi thử thách để trở thành phiên bản rạng rỡ nhất của mình.' },
+      { id: 16, name: 'Vũ Thị Phương Linh', birthday: '24/07/2011', image: 'assets/quynh-hoa.jpg', wish: 'Vũ Thị Phương Linh, mong bạn luôn linh hoạt, duyên dáng và bền bỉ theo đuổi những điều khiến trái tim mình thật sự vui.' },
+      { id: 17, name: 'Trương Vũ Thảo Vy', birthday: '30/11/2011', image: 'assets/thao-nhi.jpg', wish: 'Trương Vũ Thảo Vy, chúc bạn luôn đáng yêu, bản lĩnh và giữ được sự hồn nhiên để mỗi bước trưởng thành đều thật đẹp.' },
+      { id: 18, name: 'Lưu Hiền Lương', birthday: '17/11/2011', image: 'assets/thanh-vy.jpg', wish: 'Lưu Hiền Lương, mong bạn luôn hiền hòa, lạc quan và có đủ nội lực để mang sự ấm áp của mình đến những người xung quanh.' },
+      { id: 19, name: 'Phùng Như Hà', birthday: '09/07/2011', image: 'assets/tu-anh.jpg', wish: 'Phùng Như Hà, chúc bạn luôn dịu dàng, tự tin và gặp thật nhiều điều tốt lành trên hành trình trở thành chính mình.' },
+      { id: 20, name: 'Nguyễn Quỳnh Anh', birthday: '05/12/2011', image: 'assets/uyen-phuong.jpg', wish: 'Nguyễn Quỳnh Anh, mong bạn luôn xinh tươi, thông minh và có một thanh xuân đầy ắp tiếng cười cùng những kỷ niệm đáng nhớ.' },
+      { id: 21, name: 'Trần Khánh Ngọc', birthday: '15/04/2011', image: 'assets/van-anh.jpg', wish: 'Trần Khánh Ngọc, chúc bạn luôn được trân trọng như một viên ngọc quý, càng học hỏi càng tự tin và càng trưởng thành càng rực rỡ.' },
+      { id: 22, name: 'Trần Hoàng Ngân', birthday: '24/07/2011', image: 'assets/yen-nhi.jpg', wish: 'Trần Hoàng Ngân, mong bạn luôn tỏa sáng bằng sự tử tế, có thật nhiều may mắn và vững vàng trước mọi điều phía trước.' },
+      { id: 23, name: 'Vũ Hà Chi', birthday: '25/05/2011', image: 'assets/anh-duong.jpg', wish: 'Vũ Hà Chi, chúc bạn luôn nhanh nhẹn, đáng yêu và giữ được nguồn năng lượng trong trẻo khiến tập thể thêm vui mỗi ngày.' },
+      { id: 24, name: 'Nguyễn Ngọc Bảo Trân', birthday: '14/09/2011', image: 'assets/bich-ngan.jpg', wish: 'Nguyễn Ngọc Bảo Trân, mong bạn luôn quý giá trong chính mắt mình, học tập thật tốt và có thật nhiều người đồng hành chân thành.' },
+      { id: 25, name: 'Bùi Hồng Hạnh', birthday: '27/05/2011', image: 'assets/cam-tu.jpg', wish: 'Bùi Hồng Hạnh, chúc bạn luôn hạnh phúc, tự tin và giữ nụ cười ấm áp làm nên nét riêng không thể trộn lẫn.' },
+      { id: 26, name: 'Nguyễn Thị Thanh Nhàn', birthday: '07/09/2011', image: 'assets/dan-vy.jpg', wish: 'Nguyễn Thị Thanh Nhàn, mong bạn luôn bình tĩnh, thanh thản và đủ kiên trì để mọi nỗ lực hôm nay nở thành thành quả ngày mai.' },
+      { id: 27, name: 'Nguyễn Khánh Chi', birthday: '26/06/2011', image: 'assets/hoai-thuong.jpg', wish: 'Nguyễn Khánh Chi, chúc bạn luôn vui tươi, khéo léo và có một trái tim đủ ấm để mỗi nơi bạn đến đều trở nên thân thương.' },
+      { id: 28, name: 'Phạm Vũ Ngọc Anh', birthday: '24/07/2011', image: 'assets/moc-mien.jpg', wish: 'Phạm Vũ Ngọc Anh, mong bạn luôn thông minh, tự tin và tỏa sáng bằng vẻ đẹp riêng mà không cần so sánh với bất kỳ ai.' },
+      { id: 29, name: 'Nguyễn Trần Hạnh Nguyên', birthday: '25/01/2011', image: 'assets/nhu-quynh.jpg', wish: 'Nguyễn Trần Hạnh Nguyên, chúc bạn luôn hạnh phúc, bình an và giữ được nguồn năng lượng dịu dàng giúp mọi điều quanh mình trở nên tốt đẹp hơn.' },
+      { id: 30, name: 'Phạm Thị Ngọc Yến', birthday: '04/06/2011', image: 'assets/truc-lam.png', wish: 'Phạm Thị Ngọc Yến, mong bạn luôn xinh đẹp, mạnh mẽ và bay cao với những ước mơ trong trẻo, tự do và đầy hy vọng.' }
+    ];
+
+    /* ================================================================
+       KHỐI 2 — TRẠNG THÁI ỨNG DỤNG VÀ TIỆN ÍCH DOM
+       ================================================================ */
+    const $ = (selector, parent = document) => parent.querySelector(selector);
+    const $$ = (selector, parent = document) => [...parent.querySelectorAll(selector)];
+    const introScreen = $('#intro-screen');
+    const mainContent = $('#main-content');
+    const typewriter = $('#typewriter');
+    const membersGrid = $('#members-grid');
+    const modal = $('#member-modal');
+    const modalImage = $('#modal-image');
+    const modalName = $('#modal-name');
+    const modalBirthday = $('#modal-birthday');
+    const modalQuote = $('#modal-quote');
+    const modalCount = $('#modal-count');
+    const modalPhotoLabel = $('#modal-photo-label');
+    const likeButton = $('#like-button');
+    const letterCard = $('#letter-card');
+    const bgMusic = $('#bg-music');
+    const heartLayer = $('#heart-layer');
+    let activeIndex = 0;
+    let fxEnabled = true;
+    let musicEnabled = false;
+    let likedMembers = new Set(JSON.parse(localStorage.getItem('rose20-liked-members') || '[]'));
+    let touchStartX = 0;
+
+    /* ================================================================
+       KHỐI 3 — TYPEWRITER, ICON VÀ MÀN HÌNH MỞ QUÀ
+       ================================================================ */
+    function runTypewriter() {
+      const sentence = 'Một lời chúc nhỏ, dành cho những người làm nên thật nhiều ngày đẹp.';
+      let cursor = 0;
+      const timer = setInterval(() => {
+        typewriter.innerHTML = `${sentence.slice(0, cursor)}<span class="type-cursor"></span>`;
+        cursor += 1;
+        if (cursor > sentence.length) {
+          clearInterval(timer);
+          typewriter.dataset.repelReady = '';
+          initTextRepel(typewriter);
+        }
+      }, 47);
+    }
+
+    function refreshIcons() {
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function playSfx(kind = 'click') {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const context = new AudioContextClass();
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = kind === 'pop' ? 'triangle' : 'sine';
+        oscillator.frequency.setValueAtTime(kind === 'pop' ? 430 : 620, context.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(kind === 'pop' ? 145 : 310, context.currentTime + .16);
+        gain.gain.setValueAtTime(.0001, context.currentTime);
+        gain.gain.exponentialRampToValueAtTime(kind === 'pop' ? .08 : .045, context.currentTime + .012);
+        gain.gain.exponentialRampToValueAtTime(.0001, context.currentTime + .2);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start();
+        oscillator.stop(context.currentTime + .22);
+        oscillator.addEventListener('ended', () => context.close());
+      } catch (error) { /* Audio không khả dụng vẫn không ảnh hưởng trải nghiệm chính. */ }
+    }
+
+    function openGarden() {
+      playSfx('pop');
+      introScreen.classList.add('is-hidden');
+      document.body.classList.add('revealed');
+      mainContent.setAttribute('aria-hidden', 'false');
+      if (musicEnabled) bgMusic.play().catch(() => {});
+      window.setTimeout(() => { introScreen.hidden = true; }, 900);
+    }
+
+    function initIntroTilt() {
+      const stage = $('#bouquet-stage');
+      const tilt = $('#bouquet-tilt');
+      stage.addEventListener('pointermove', (event) => {
+        const bounds = stage.getBoundingClientRect();
+        const x = (event.clientX - bounds.left) / bounds.width - .5;
+        const y = (event.clientY - bounds.top) / bounds.height - .5;
+        tilt.style.transform = `rotateY(${x * 14}deg) rotateX(${y * -12}deg)`;
+      });
+      stage.addEventListener('pointerleave', () => { tilt.style.transform = ''; });
+    }
+
+    /* ================================================================
+       KHỐI 4 — RENDER THƯ VIỆN 30 HỒ SƠ VÀ 3D TILT CARD
+       ================================================================ */
+    function renderMembers() {
+      membersGrid.innerHTML = members.map((member, index) => `
+        <article class="member-card" data-member-index="${index}" tabindex="0" role="button" aria-label="Mở lời chúc dành cho ${member.name}">
+          <img src="${member.image}" alt="Chân dung ${member.name}" loading="lazy">
+          <span class="member-index">${String(member.id).padStart(2, '0')}</span>
+          <span class="member-liked">${likedMembers.has(member.id) ? '♥' : ''}</span>
+          <div class="member-info"><span class="member-birthday">${member.birthday}</span><h3 class="member-name">${member.name}</h3><span class="member-cta">Chạm để mở lời chúc <i data-lucide="arrow-up-right"></i></span></div>
+        </article>
+      `).join('');
+      $$('.member-card').forEach((card) => {
+        const open = () => openMember(Number(card.dataset.memberIndex));
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); open(); } });
+        card.addEventListener('pointermove', (event) => {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - .5;
+          const y = (event.clientY - rect.top) / rect.height - .5;
+          card.style.transform = `perspective(750px) rotateX(${y * -4}deg) rotateY(${x * 5}deg) scale(1.018)`;
+        });
+        card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+      });
+      refreshIcons();
+      initTextRepel(membersGrid);
+    }
+
+    /* ================================================================
+       KHỐI 5 — LIGHTBOX / PHOTOBOOK, NEXT-PREV, SWIPE VÀ LOCALSTORAGE
+       ================================================================ */
+    function openMember(index) {
+      activeIndex = (index + members.length) % members.length;
+      renderModal();
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('no-scroll');
+      playSfx('click');
+    }
+
+    function renderModal() {
+      const member = members[activeIndex];
+      modalImage.src = member.image;
+      modalImage.alt = `Chân dung ${member.name}`;
+      modalBirthday.textContent = member.birthday;
+      modalName.textContent = member.name;
+      modalQuote.textContent = member.wish;
+      modalCount.textContent = `${String(member.id).padStart(2, '0')} / ${String(members.length).padStart(2, '0')}`;
+      modalPhotoLabel.textContent = `Vườn hoa · ${member.name}`;
+      likeButton.classList.toggle('is-liked', likedMembers.has(member.id));
+      likeButton.innerHTML = `<i data-lucide="heart"></i><span>${likedMembers.has(member.id) ? 'Đã gửi yêu thương' : 'Thả tim'}</span>`;
+      refreshIcons();
+      [modalCount, modalBirthday, modalName, modalQuote, modalPhotoLabel].forEach((element) => { element.dataset.repelReady = ''; });
+      initTextRepel(modal);
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('no-scroll');
+    }
+
+    function moveMember(step) {
+      activeIndex = (activeIndex + step + members.length) % members.length;
+      renderModal();
+      playSfx('click');
+    }
+
+    function saveLikedState() {
+      localStorage.setItem('rose20-liked-members', JSON.stringify([...likedMembers]));
+    }
+
+    function createHearts() {
+      for (let index = 0; index < 16; index += 1) {
+        const heart = document.createElement('span');
+        heart.className = 'floating-heart';
+        heart.textContent = index % 3 === 0 ? '♥' : '♡';
+        heart.style.left = `${24 + Math.random() * 52}%`;
+        heart.style.bottom = `${18 + Math.random() * 16}%`;
+        heart.style.setProperty('--drift', `${(Math.random() - .5) * 150}px`);
+        heart.style.animationDelay = `${Math.random() * .35}s`;
+        heartLayer.appendChild(heart);
+        window.setTimeout(() => heart.remove(), 2200);
+      }
+    }
+
+    /* ================================================================
+       KHỐI 6 — CANVAS HOA RƠI VÀ HẠT SÁNG TƯƠNG TÁC CON TRỎ
+       requestAnimationFrame chạy một vòng lặp duy nhất; mobile giảm số hạt.
+       ================================================================ */
+    const particleCanvas = $('#particle-canvas');
+    const particleContext = particleCanvas.getContext('2d');
+    const particles = [];
+    const pointer = { x: -100, y: -100 };
+    let canvasWidth = 0;
+    let canvasHeight = 0;
+
+    function resizeParticleCanvas() {
+      const scale = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvasWidth = window.innerWidth;
+      canvasHeight = window.innerHeight;
+      particleCanvas.width = Math.floor(canvasWidth * scale);
+      particleCanvas.height = Math.floor(canvasHeight * scale);
+      particleCanvas.style.width = `${canvasWidth}px`;
+      particleCanvas.style.height = `${canvasHeight}px`;
+      particleContext.setTransform(scale, 0, 0, scale, 0, 0);
+      const targetCount = window.innerWidth < 640 ? 35 : 68;
+      while (particles.length < targetCount) particles.push(makeParticle(true));
+      while (particles.length > targetCount) particles.pop();
+    }
+
+    function makeParticle(initial = false) {
+      const isPetal = Math.random() > .31;
+      return {
+        kind: isPetal ? 'petal' : 'sparkle',
+        x: Math.random() * Math.max(canvasWidth, 1),
+        y: initial ? Math.random() * Math.max(canvasHeight, 1) : -25,
+        size: isPetal ? 4 + Math.random() * 7 : 1.2 + Math.random() * 2.2,
+        speed: isPetal ? .35 + Math.random() * .8 : .15 + Math.random() * .32,
+        drift: (Math.random() - .5) * .45,
+        rotation: Math.random() * Math.PI * 2,
+        spin: (Math.random() - .5) * .035,
+        phase: Math.random() * Math.PI * 2,
+        alpha: isPetal ? .32 + Math.random() * .38 : .3 + Math.random() * .6,
+        color: Math.random() > .45 ? '#e39aa3' : '#e9c18e'
+      };
+    }
+
+    function drawPetal(particle, time) {
+      particle.y += particle.speed;
+      particle.x += particle.drift + Math.sin(time * .001 + particle.phase) * .22;
+      particle.rotation += particle.spin;
+      if (particle.y > canvasHeight + 28) Object.assign(particle, makeParticle());
+      if (particle.x < -30) particle.x = canvasWidth + 30;
+      if (particle.x > canvasWidth + 30) particle.x = -30;
+      particleContext.save();
+      particleContext.translate(particle.x, particle.y);
+      particleContext.rotate(particle.rotation);
+      particleContext.globalAlpha = particle.alpha;
+      particleContext.fillStyle = particle.color;
+      particleContext.beginPath();
+      particleContext.moveTo(0, -particle.size);
+      particleContext.bezierCurveTo(particle.size * 1.5, -particle.size * .55, particle.size * 1.35, particle.size, 0, particle.size * 1.15);
+      particleContext.bezierCurveTo(-particle.size * 1.35, particle.size, -particle.size * 1.5, -particle.size * .55, 0, -particle.size);
+      particleContext.fill();
+      particleContext.restore();
+    }
+
+    function drawSparkle(particle, time) {
+      particle.y += particle.speed;
+      particle.x += Math.sin(time * .001 + particle.phase) * .14;
+      if (particle.y > canvasHeight + 8) Object.assign(particle, makeParticle());
+      const distance = Math.hypot(pointer.x - particle.x, pointer.y - particle.y);
+      const boost = distance < 120 ? (1 - distance / 120) : 0;
+      particleContext.save();
+      particleContext.globalAlpha = Math.min(1, particle.alpha + boost * .7);
+      particleContext.strokeStyle = '#fff4d8';
+      particleContext.lineWidth = 1;
+      particleContext.beginPath();
+      particleContext.moveTo(particle.x - particle.size * (1 + boost * 2.2), particle.y);
+      particleContext.lineTo(particle.x + particle.size * (1 + boost * 2.2), particle.y);
+      particleContext.moveTo(particle.x, particle.y - particle.size * (1 + boost * 2.2));
+      particleContext.lineTo(particle.x, particle.y + particle.size * (1 + boost * 2.2));
+      particleContext.stroke();
+      particleContext.restore();
+    }
+
+    function animateParticles(time = 0) {
+      particleContext.clearRect(0, 0, canvasWidth, canvasHeight);
+      if (fxEnabled) particles.forEach((particle) => particle.kind === 'petal' ? drawPetal(particle, time) : drawSparkle(particle, time));
+      requestAnimationFrame(animateParticles);
+    }
+
+    /* ================================================================
+       KHỐI 7 — FIREWORKS CANVAS VÀ MINI-GAME BỐC THĂM LỜI CHÚC
+       ================================================================ */
+    const fireworkCanvas = $('#firework-canvas');
+    const fireworkContext = fireworkCanvas.getContext('2d');
+    const fireworks = [];
+    let fireworkWidth = 0;
+    let fireworkHeight = 0;
+
+    function resizeFireworkCanvas() {
+      const scale = Math.min(window.devicePixelRatio || 1, 1.5);
+      fireworkWidth = window.innerWidth;
+      fireworkHeight = window.innerHeight;
+      fireworkCanvas.width = Math.floor(fireworkWidth * scale);
+      fireworkCanvas.height = Math.floor(fireworkHeight * scale);
+      fireworkContext.setTransform(scale, 0, 0, scale, 0, 0);
+    }
+
+    function launchFireworks() {
+      const palettes = ['#ffd7a3', '#f49aab', '#fff1d6', '#cf7a9c', '#d8b4f0'];
+      for (let burst = 0; burst < 5; burst += 1) {
+        const centerX = fireworkWidth * (.18 + Math.random() * .64);
+        const centerY = fireworkHeight * (.18 + Math.random() * .34);
+        for (let particle = 0; particle < 46; particle += 1) {
+          const angle = (Math.PI * 2 * particle) / 46;
+          const speed = 1.4 + Math.random() * 3.4;
+          fireworks.push({ x: centerX, y: centerY, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, decay: .012 + Math.random() * .015, size: 1.5 + Math.random() * 2.5, color: palettes[Math.floor(Math.random() * palettes.length)] });
+        }
+      }
+      playSfx('pop');
+    }
+
+    function animateFireworks() {
+      fireworkContext.clearRect(0, 0, fireworkWidth, fireworkHeight);
+      for (let index = fireworks.length - 1; index >= 0; index -= 1) {
+        const particle = fireworks[index];
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vy += .026;
+        particle.vx *= .994;
+        particle.life -= particle.decay;
+        if (particle.life <= 0) { fireworks.splice(index, 1); continue; }
+        fireworkContext.globalAlpha = particle.life;
+        fireworkContext.fillStyle = particle.color;
+        fireworkContext.beginPath();
+        fireworkContext.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        fireworkContext.fill();
+      }
+      fireworkContext.globalAlpha = 1;
+      requestAnimationFrame(animateFireworks);
+    }
+
+    const fortunes = [
+      ['“Hạnh phúc không phải là đích đến, mà là cách bạn nở hoa trên hành trình.”', '— Một lời nhắc dịu dàng cho hôm nay'],
+      ['Bạn sẽ gặp một tin vui bất ngờ trước khi kịp pha xong tách trà đầu tiên.', '— Vũ trụ đang đứng về phía bạn'],
+      ['Nếu hôm nay thấy mệt, hãy nhớ: bạn không cần tỏa sáng mọi lúc để vẫn là một vì sao.', '— Gửi bạn một cái ôm thật lâu'],
+      ['Năm nay, vận may của bạn có hình dáng của một cơ hội rất đẹp. Đừng ngại đưa tay nắm lấy.', '— Lộc đang gõ cửa'],
+      ['Bạn vừa nhận được một vé miễn phí để yêu bản thân nhiều hơn 20% mỗi ngày.', '— Không hoàn lại, dùng trọn đời'],
+      ['Điều tuyệt vời nhất sắp đến thường bắt đầu bằng một bước nhỏ rất bình thường.', '— Cứ đi, hoa sẽ nở phía trước'],
+      ['Chúc bạn ví luôn đầy, lòng luôn vui, tóc luôn đẹp và deadline biết tự biến mất.', '— Lời chúc có chút thực tế'],
+      ['Bạn là phiên bản giới hạn, không cần so sánh với bất kỳ bản cập nhật nào khác.', '— Hãy tự hào về bản gốc của mình'],
+      ['Một cuộc gặp, một ý tưởng và một nụ cười sẽ làm ngày của bạn đổi màu.', '— Hôm nay hãy để cửa lòng mở hé'],
+      ['Mong mọi điều bạn âm thầm cầu chúc đều tìm được đường trở về bên bạn.', '— Với thật nhiều thương yêu']
+    ];
+
+    function drawFortune() {
+      $('#fortune-result').classList.add('is-visible');
+      launchFireworks();
+      if (window.confetti) {
+        window.confetti({ particleCount: 150, spread: 90, origin: { y: .62 }, colors: ['#d98f9a', '#c89968', '#fff1d6', '#b45e73'] });
+        window.setTimeout(() => window.confetti({ particleCount: 70, spread: 65, angle: 60, origin: { x: .08, y: .7 }, colors: ['#d98f9a', '#efd7b7', '#fff9f5'] }), 260);
+        window.setTimeout(() => window.confetti({ particleCount: 70, spread: 65, angle: 120, origin: { x: .92, y: .7 }, colors: ['#d98f9a', '#efd7b7', '#fff9f5'] }), 390);
+      }
+    }
+
+    /* ================================================================
+       KHỐI 7.25 — TEXT REPEL ENGINE
+       Mỗi từ được tách thành một lớp riêng. Khi con trỏ đến gần, từ đó
+       né theo vector ngược hướng con trỏ; khi rời khỏi dòng chữ, spring
+       CSS đưa toàn bộ từ về đúng vị trí ban đầu.
+       ================================================================ */
+    function initTextRepel(scope = document) {
+      const selector = '.intro-kicker, .intro-title, .intro-subtitle, .intro-note, .eyebrow, .hero h1, .hero-lead, .hero-stat span, .section-title, .section-intro, .archive-tools span, .member-name, .member-birthday, .member-cta, .letter-copy p, .letter-paper h3, .letter-paper p, .letter-sign, .fortune-kicker, .fortune-title, .fortune-text, .fortune-action span, .fortune-answer small, .fortune-answer p, .fortune-answer span, .footer-mark, #modal-count, #modal-name, #modal-birthday, #modal-quote, #modal-photo-label';
+      const targets = [...(scope.matches?.(selector) ? [scope] : []), ...scope.querySelectorAll(selector)].filter((element) => !element.dataset.repelReady);
+      targets.forEach((target) => {
+        target.dataset.repelReady = 'true';
+        const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT);
+        const textNodes = [];
+        let currentNode;
+        while ((currentNode = walker.nextNode())) textNodes.push(currentNode);
+        textNodes.forEach((textNode) => {
+          if (!textNode.nodeValue.trim()) return;
+          const fragment = document.createDocumentFragment();
+          textNode.nodeValue.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (/\s+/.test(part)) fragment.appendChild(document.createTextNode(part));
+            else {
+              const word = document.createElement('span');
+              word.className = 'repel-word';
+              word.textContent = part;
+              fragment.appendChild(word);
+            }
+          });
+          textNode.parentNode.replaceChild(fragment, textNode);
+        });
+
+        const words = $$('.repel-word', target);
+        target.addEventListener('pointermove', (event) => {
+          if (window.innerWidth < 700 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          words.forEach((word) => {
+            const rect = word.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const dx = centerX - event.clientX;
+            const dy = centerY - event.clientY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const radius = 125;
+            if (distance >= radius) {
+              word.style.transform = '';
+              word.classList.remove('is-repelled');
+              return;
+            }
+            const force = Math.pow(1 - distance / radius, 2);
+            const angle = Math.atan2(dy, dx);
+            const pushX = Math.cos(angle) * force * 20;
+            const pushY = Math.sin(angle) * force * 14;
+            const rotation = (centerX < event.clientX ? -1 : 1) * force * 7;
+            word.style.transform = `translate3d(${pushX.toFixed(2)}px, ${pushY.toFixed(2)}px, 0) rotate(${rotation.toFixed(2)}deg)`;
+            word.classList.add('is-repelled');
+          });
+        });
+        target.addEventListener('pointerleave', () => {
+          words.forEach((word) => {
+            word.style.transform = '';
+            word.classList.remove('is-repelled');
+          });
+        });
+      });
+    }
+
+    /* ================================================================
+       KHỐI 7.5 — MOTION ENGINE: SCROLL REVEAL, PARALLAX VÀ HOVER
+       IntersectionObserver chỉ đánh thức animation khi phần tử tiến vào viewport,
+       giúp hiệu ứng phức tạp vẫn mượt và tiết kiệm pin trên mobile.
+       ================================================================ */
+    function initMotionEngine() {
+      const progress = document.createElement('div');
+      progress.className = 'scroll-progress';
+      progress.id = 'scroll-progress';
+      document.body.appendChild(progress);
+
+      const glow = document.createElement('div');
+      glow.className = 'cursor-glow';
+      glow.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(glow);
+
+      const revealItems = [
+        ...$$('.section-head-copy'),
+        ...$$('.archive-tools'),
+        ...$$('.member-card'),
+        ...$$('.letter-copy'),
+        ...$$('.letter-wrap'),
+        ...$$('.fortune-box'),
+        ...$$('.footer')
+      ];
+      revealItems.forEach((element, index) => {
+        element.dataset.reveal = index % 4 === 1 ? 'left' : index % 4 === 3 ? 'right' : index % 5 === 0 ? 'scale' : 'up';
+        if (element.classList.contains('member-card')) element.style.transitionDelay = `${(index % 5) * 65}ms`;
+      });
+      $$('.section').forEach((section) => section.dataset.revealSection = 'true');
+
+      const observer = new IntersectionObserver((entries, observerInstance) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observerInstance.unobserve(entry.target);
+        });
+      }, { threshold: .13, rootMargin: '0px 0px -8% 0px' });
+      $$('[data-reveal], [data-reveal-section]').forEach((element) => observer.observe(element));
+
+      let framePending = false;
+      let lastScrollY = window.scrollY;
+      const heroArt = $('.hero-art');
+      const heroCopy = $('.hero-copy');
+      const updateScrollMotion = () => {
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const ratio = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+        progress.style.transform = `scaleX(${ratio})`;
+        if (window.innerWidth > 700 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const delta = window.scrollY - lastScrollY;
+          const heroOffset = Math.min(70, window.scrollY * .12);
+          heroArt.style.transform = `translate3d(0, ${heroOffset}px, 0) rotate(${Math.max(-2, Math.min(2, delta * .06))}deg)`;
+          heroCopy.style.transform = `translate3d(0, ${Math.min(25, window.scrollY * .035)}px, 0)`;
+        }
+        lastScrollY = window.scrollY;
+        framePending = false;
+      };
+      window.addEventListener('scroll', () => {
+        if (framePending) return;
+        framePending = true;
+        requestAnimationFrame(updateScrollMotion);
+      }, { passive: true });
+      updateScrollMotion();
+
+      const interactive = $$('.member-card, .hero-frame, .fortune-box, .letter-wrap');
+      interactive.forEach((element) => {
+        element.addEventListener('pointermove', (event) => {
+          const rect = element.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width;
+          const y = (event.clientY - rect.top) / rect.height;
+          element.style.setProperty('--mx', `${x * 100}%`);
+          element.style.setProperty('--my', `${y * 100}%`);
+          if (element.classList.contains('member-card') && window.innerWidth > 700) {
+            element.style.transform = `perspective(900px) rotateX(${(y - .5) * -9}deg) rotateY(${(x - .5) * 10}deg) translateY(-5px) scale(1.025)`;
+          }
+        });
+        element.addEventListener('pointerleave', () => { element.style.transform = ''; });
+      });
+
+      const magnetic = $$('.btn-primary, .btn-secondary, .btn-quiet, .control-button, .nav-circle, .like-button');
+      magnetic.forEach((element) => {
+        element.addEventListener('pointermove', (event) => {
+          if (window.innerWidth < 700) return;
+          const rect = element.getBoundingClientRect();
+          const x = event.clientX - (rect.left + rect.width / 2);
+          const y = event.clientY - (rect.top + rect.height / 2);
+          element.style.transform = `translate(${x * .13}px, ${y * .18}px)`;
+        });
+        element.addEventListener('pointerleave', () => { element.style.transform = ''; });
+      });
+
+      document.addEventListener('pointermove', (event) => {
+        if (window.innerWidth < 700 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        glow.style.left = `${event.clientX}px`;
+        glow.style.top = `${event.clientY}px`;
+        document.body.classList.add('is-interacting');
+      }, { passive: true });
+      document.addEventListener('pointerleave', () => document.body.classList.remove('is-interacting'));
+    }
+
+    /* ================================================================
+       KHỐI 8 — SỰ KIỆN, ÂM NHẠC, THIỆP VÀ KHỞI TẠO
+       ================================================================ */
+    $('#open-gift').addEventListener('click', openGarden);
+    $('#fx-toggle').addEventListener('click', (event) => {
+      fxEnabled = !fxEnabled;
+      event.currentTarget.classList.toggle('is-off', !fxEnabled);
+      event.currentTarget.setAttribute('aria-label', fxEnabled ? 'Tắt hiệu ứng nền' : 'Bật hiệu ứng nền');
+      playSfx('click');
+    });
+    $('#music-toggle').addEventListener('click', (event) => {
+      musicEnabled = !musicEnabled;
+      event.currentTarget.classList.toggle('is-off', !musicEnabled);
+      event.currentTarget.setAttribute('aria-label', musicEnabled ? 'Tắt nhạc nền' : 'Bật nhạc nền');
+      if (musicEnabled) bgMusic.play().catch(() => { musicEnabled = false; event.currentTarget.classList.add('is-off'); });
+      else bgMusic.pause();
+    });
+    $('#modal-close').addEventListener('click', closeModal);
+    $('#prev-member').addEventListener('click', () => moveMember(-1));
+    $('#next-member').addEventListener('click', () => moveMember(1));
+    modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+    document.addEventListener('keydown', (event) => {
+      if (!modal.classList.contains('is-open')) return;
+      if (event.key === 'Escape') closeModal();
+      if (event.key === 'ArrowLeft') moveMember(-1);
+      if (event.key === 'ArrowRight') moveMember(1);
+    });
+    $('#modal-window').addEventListener('touchstart', (event) => { touchStartX = event.changedTouches[0].screenX; }, { passive: true });
+    $('#modal-window').addEventListener('touchend', (event) => {
+      const distance = event.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(distance) > 55) moveMember(distance < 0 ? 1 : -1);
+    }, { passive: true });
+    likeButton.addEventListener('click', () => {
+      const member = members[activeIndex];
+      if (likedMembers.has(member.id)) likedMembers.delete(member.id); else { likedMembers.add(member.id); createHearts(); playSfx('pop'); }
+      saveLikedState();
+      renderModal();
+      renderMembers();
+    });
+    $('#letter-toggle').addEventListener('click', () => {
+      const isOpen = letterCard.classList.toggle('is-open');
+      $('#letter-toggle span').textContent = isOpen ? 'Gấp thiệp lại' : 'Mở thiệp';
+      playSfx('click');
+    });
+    $('#letter-cover').addEventListener('click', () => {
+      const isOpen = letterCard.classList.toggle('is-open');
+      $('#letter-toggle span').textContent = isOpen ? 'Gấp thiệp lại' : 'Mở thiệp';
+      playSfx('click');
+    });
+    $('#draw-fortune').addEventListener('click', drawFortune);
+    document.addEventListener('pointermove', (event) => { pointer.x = event.clientX; pointer.y = event.clientY; }, { passive: true });
+    window.addEventListener('resize', () => { resizeParticleCanvas(); resizeFireworkCanvas(); });
+
+    runTypewriter();
+    initIntroTilt();
+    renderMembers();
+    initTextRepel();
+    initMotionEngine();
+    resizeParticleCanvas();
+    resizeFireworkCanvas();
+    animateParticles();
+    animateFireworks();
+    refreshIcons();
+  </script>
+
+  <script>
+    /* VIP 20/11 — timeline tự chủ, không AI/API bên ngoài */
+    (() => {
+      const intro = document.getElementById('vip-intro');
+      const canvas = document.getElementById('vip-canvas');
+      const ctx = canvas.getContext('2d');
+      const countdown = document.getElementById('vip-countdown');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let particles = [];
+      let celebrationSparks = [];
+      let raf;
+      let finished = false;
+
+      function resize() { const scale = Math.min(window.devicePixelRatio || 1, 1.5); canvas.width = Math.floor(window.innerWidth * scale); canvas.height = Math.floor(window.innerHeight * scale); ctx.setTransform(scale, 0, 0, scale, 0, 0); }
+      function seedParticles() {
+        const count = Math.min(180, Math.max(70, Math.floor(window.innerWidth * window.innerHeight / 11000)));
+        particles = Array.from({ length: count }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 2.3 + .3, vx: (Math.random() - .5) * .22, vy: Math.random() * .46 + .05, a: Math.random() * .7 + .12, tw: Math.random() * 6.28 }));
+      }
+      function drawParticles(time = 0) {
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        particles.forEach((p) => { p.x += p.vx + Math.sin(time / 1500 + p.tw) * .08; p.y += p.vy; if (p.y > innerHeight + 8) { p.y = -8; p.x = Math.random() * innerWidth; } if (p.x < -8) p.x = innerWidth + 8; if (p.x > innerWidth + 8) p.x = -8; const glow = p.a * (.55 + Math.sin(time / 500 + p.tw) * .35); ctx.beginPath(); ctx.fillStyle = `rgba(230, 215, 169, ${Math.max(.04, glow)})`; ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); });
+        celebrationSparks = celebrationSparks.filter((spark) => { spark.x += spark.vx; spark.y += spark.vy; spark.vy += .018; spark.vx *= .992; spark.life -= spark.decay; if (spark.life <= 0) return false; ctx.globalAlpha = Math.max(0, spark.life); ctx.fillStyle = spark.color; ctx.shadowBlur = 12; ctx.shadowColor = spark.color; ctx.beginPath(); ctx.arc(spark.x, spark.y, spark.size * (0.7 + spark.life), 0, Math.PI * 2); ctx.fill(); return true; });
+        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+        raf = requestAnimationFrame(drawParticles);
+      }
+      function launchVipCelebration() {
+        const palette = ['#ffe7a8', '#9fe5df', '#f4a4b7', '#ffffff'];
+        const centerX = innerWidth * .5;
+        const centerY = innerHeight * .39;
+        for (let burst = 0; burst < 4; burst += 1) {
+          const angleOffset = burst * .42;
+          for (let index = 0; index < 34; index += 1) {
+            const angle = angleOffset + (Math.PI * 2 * index) / 34;
+            const speed = 1.8 + Math.random() * 3.5;
+            celebrationSparks.push({ x: centerX + (Math.random() - .5) * 28, y: centerY + (Math.random() - .5) * 22, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, decay: .012 + Math.random() * .009, size: 1.4 + Math.random() * 2.2, color: palette[Math.floor(Math.random() * palette.length)] });
+          }
+        }
+      }
+      let vipAudioContext;
+      function playVipDoorSfx() {
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          vipAudioContext ||= new AudioContextClass();
+          const audio = vipAudioContext;
+          audio.resume().catch(() => {});
+          const now = audio.currentTime;
+          const master = audio.createGain();
+          master.gain.setValueAtTime(.0001, now);
+          master.gain.exponentialRampToValueAtTime(.42, now + .035);
+          master.gain.exponentialRampToValueAtTime(.0001, now + 2.15);
+          master.connect(audio.destination);
+
+          const thud = audio.createOscillator();
+          const thudGain = audio.createGain();
+          thud.type = 'sine';
+          thud.frequency.setValueAtTime(92, now);
+          thud.frequency.exponentialRampToValueAtTime(38, now + .72);
+          thudGain.gain.setValueAtTime(.42, now);
+          thudGain.gain.exponentialRampToValueAtTime(.0001, now + .8);
+          thud.connect(thudGain).connect(master);
+          thud.start(now); thud.stop(now + .82);
+
+          const creak = audio.createOscillator();
+          const creakGain = audio.createGain();
+          creak.type = 'sawtooth';
+          creak.frequency.setValueAtTime(175, now + .08);
+          creak.frequency.exponentialRampToValueAtTime(63, now + 1.5);
+          creakGain.gain.setValueAtTime(.0001, now);
+          creakGain.gain.exponentialRampToValueAtTime(.12, now + .18);
+          creakGain.gain.exponentialRampToValueAtTime(.0001, now + 1.7);
+          creak.connect(creakGain).connect(master);
+          creak.start(now); creak.stop(now + 1.75);
+
+          const noiseBuffer = audio.createBuffer(1, audio.sampleRate * .42, audio.sampleRate);
+          const noiseData = noiseBuffer.getChannelData(0);
+          for (let index = 0; index < noiseData.length; index += 1) noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseData.length);
+          const noise = audio.createBufferSource();
+          const filter = audio.createBiquadFilter();
+          const noiseGain = audio.createGain();
+          filter.type = 'lowpass'; filter.frequency.value = 520;
+          noiseGain.gain.setValueAtTime(.0001, now);
+          noiseGain.gain.exponentialRampToValueAtTime(.18, now + .03);
+          noiseGain.gain.exponentialRampToValueAtTime(.0001, now + .42);
+          noise.buffer = noiseBuffer;
+          noise.connect(filter).connect(noiseGain).connect(master);
+          noise.start(now); noise.stop(now + .44);
+
+          const chime = audio.createOscillator();
+          const chimeGain = audio.createGain();
+          chime.type = 'triangle';
+          chime.frequency.setValueAtTime(690, now + .16);
+          chime.frequency.exponentialRampToValueAtTime(330, now + 1.25);
+          chimeGain.gain.setValueAtTime(.0001, now + .12);
+          chimeGain.gain.exponentialRampToValueAtTime(.1, now + .22);
+          chimeGain.gain.exponentialRampToValueAtTime(.0001, now + 1.35);
+          chime.connect(chimeGain).connect(master);
+          chime.start(now + .12); chime.stop(now + 1.4);
+        } catch (error) { /* Trình duyệt chặn audio tự động thì intro vẫn chạy bình thường. */ }
+      }
+      function count(value) { countdown.textContent = value; countdown.classList.remove('show'); void countdown.offsetWidth; countdown.classList.add('show'); }
+      function finish() {
+        if (finished) return;
+        finished = true;
+        cancelAnimationFrame(raf);
+        intro.classList.add('vip-out');
+        document.body.classList.remove('vip-lock');
+        window.setTimeout(() => { intro.hidden = true; }, 950);
+      }
+      function timeline() {
+        if (reduced) { window.setTimeout(finish, 500); return; }
+        intro.classList.add('mist-live');
+        window.setTimeout(() => intro.classList.add('n20-live'), 1000);
+        window.setTimeout(() => intro.classList.add('pan-right'), 3200);
+        window.setTimeout(() => intro.classList.add('n10-live'), 5000);
+        window.setTimeout(() => intro.classList.add('n10-escape'), 6500);
+        window.setTimeout(() => { intro.classList.add('merge'); launchVipCelebration(); }, 8200);
+        window.setTimeout(() => intro.classList.add('door-pull', 'door-live'), 10000);
+        window.setTimeout(() => { intro.classList.add('counting'); count('3'); }, 13500);
+        window.setTimeout(() => count('2'), 15000);
+        window.setTimeout(() => count('1'), 16500);
+        window.setTimeout(() => { playVipDoorSfx(); intro.classList.add('door-open'); }, 18000);
+        window.setTimeout(finish, 20000);
+      }
+      document.body.classList.add('vip-lock');
+      document.getElementById('vip-skip').addEventListener('click', finish);
+      window.addEventListener('resize', () => { resize(); seedParticles(); });
+      resize(); seedParticles(); drawParticles(); timeline();
+    })();
+  </script>
+
+</body>
+</html>
